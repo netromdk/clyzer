@@ -2,14 +2,18 @@
 #include <QFile>
 #include <QMenu>
 #include <QDebug>
+#include <QRegExp>
 #include <QMenuBar>
 #include <QTextEdit>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QKeySequence>
 
+#include "Types.h"
 #include "Utility.h"
 #include "MainWindow.h"
+#include "Distribution.h"
+#include "FrequencyDialog.h"
 
 MainWindow::MainWindow() {
   init();
@@ -65,6 +69,15 @@ void MainWindow::enableAnalyses(bool enable) {
   }
 }
 
+QString MainWindow::getCiphertext() {
+  QString ciphertext = txt->toPlainText();
+
+  // Remove white space.
+  ciphertext = ciphertext.remove(QRegExp("[\\t\\n\\r\\v\\f\\a\\s]"));  
+
+  return ciphertext;
+}
+
 void MainWindow::onOpenCiphertext() {
   QString caption = tr("Choose a file containing a ciphertext");
   QString filter = tr("Text file (*.txt)");
@@ -91,7 +104,16 @@ void MainWindow::onOpenCiphertext() {
 }
 
 void MainWindow::onFrequencyDistribution() {
-  
+  // Assume English alphabet at first [A-Z]!
+  FreqMap dist;
+  for (char c = 'A'; c != 'Z'; c++) {
+    dist[QString(c)] = 0;
+  }
+
+  dist = frequencyDistribution(getCiphertext(), dist);
+
+  FrequencyDialog diag(dist);
+  diag.exec();
 }
 
 void MainWindow::onDigraphDistribution() {

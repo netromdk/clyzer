@@ -24,6 +24,7 @@ private slots:
 private:
   void init();
   void enableAnalyses(bool enable = true);
+  QString getCiphertext();
 
   QMenu *analysisMenu;
   QList<QAction*> analysisActions;
