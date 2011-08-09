@@ -35,8 +35,15 @@ QPixmap generateFrequencyPixmap(const FreqMap &map, int height) {
     }
     tot += val;
   }
-  width += 3 * step;
-  pxCnt = (height - (4 * step) - lineHeight) / max;
+  width += 2 * step;
+
+  QFontMetrics fm2(font2);
+  fm2.width("A");
+  int lh2 = fm2.height();
+
+  // Determine the amount of pixels pr. count of one
+  // letter-occurrence.
+  pxCnt = (height - lineHeight - lh2 - (2 * step)) / max;
 
   QPixmap pix(width, height);
   pix.fill();
@@ -44,8 +51,7 @@ QPixmap generateFrequencyPixmap(const FreqMap &map, int height) {
   QPainter painter(&pix);
   painter.setFont(font);
 
-  int x = 2 * step, y = lineHeight + step;
-  QFontMetrics fm2(font2);
+  int x = step, y = lineHeight + step / 2;
   foreach (QString key, map.keys()) {
     width = fm.width(key) + step / 2;
     painter.setFont(font);        

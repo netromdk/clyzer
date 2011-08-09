@@ -39,13 +39,22 @@ void MainWindow::init() {
 
   analysisMenu = menuBar()->addMenu(tr("Analysis"));
 
+  QString btn;
+#ifdef __APPLE__
+  btn = "Meta";
+#else
+  btn = "Ctrl";
+#endif
+  
   QAction *freq = analysisMenu->addAction(tr("Frequency Distribution"));
   freq->setStatusTip(tr("Show a frequency distribution of the ciphertext."));
+  freq->setShortcut(QKeySequence(btn + "+F"));
   connect(freq, SIGNAL(triggered()), this, SLOT(onFrequencyDistribution()));
   analysisActions.append(freq);
 
   QAction *digraph = analysisMenu->addAction(tr("Digraph Distribution"));
   digraph->setStatusTip(tr("Show a digraph distribution of the ciphertext to see how the letters relate to each other."));
+  digraph->setShortcut(QKeySequence(btn + "+D"));  
   connect(digraph, SIGNAL(triggered()), this, SLOT(onDigraphDistribution()));
   analysisActions.append(digraph);
 
@@ -53,12 +62,14 @@ void MainWindow::init() {
 
   QAction *slide = analysisMenu->addAction(tr("Sliding Comparison"));
   slide->setStatusTip(tr("Show a sliding comparison of the plain- and ciphertext distributions."));
+  slide->setShortcut(QKeySequence(btn + "+S"));    
   connect(slide, SIGNAL(triggered()), this, SLOT(onSlidingComparison()));
   analysisActions.append(slide);    
 
   enableAnalyses(false);
 
   // Setup window.
+  setWindowTitle(tr("Clyzer - The Cryptanalytic Tool"));
   resize(800, 600);
   centerWidget(this);  
 }
