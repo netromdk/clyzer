@@ -23,7 +23,7 @@ QPixmap generateFrequencyPixmap(const FreqMap &map, int height) {
   font2.setPixelSize(9);  
   
   // Calculate the width and height of the picture.
-  int width = 0, lineHeight, step = 10, tot = 0, max = 0, pxCnt;
+  int width = 0, lineHeight, step = 15, tot = 0, max = 0;
   QFontMetrics fm(font);
   foreach (QString key, map.keys()) {
     width += fm.width(key) + step;
@@ -35,7 +35,7 @@ QPixmap generateFrequencyPixmap(const FreqMap &map, int height) {
     }
     tot += val;
   }
-  width += 2 * step;
+  width += step;
 
   QFontMetrics fm2(font2);
   fm2.width("A");
@@ -43,7 +43,7 @@ QPixmap generateFrequencyPixmap(const FreqMap &map, int height) {
 
   // Determine the amount of pixels pr. count of one
   // letter-occurrence.
-  pxCnt = (height - lineHeight - lh2 - (2 * step)) / max;
+  int pxCnt = (height - lineHeight - lh2 - (2 * step)) / max;
 
   QPixmap pix(width, height);
   pix.fill();
@@ -53,7 +53,7 @@ QPixmap generateFrequencyPixmap(const FreqMap &map, int height) {
 
   int x = step, y = lineHeight + step / 2;
   foreach (QString key, map.keys()) {
-    width = fm.width(key) + step / 2;
+    width = fm.width(key);
     painter.setFont(font);        
     painter.drawText(x, y, key);
 
@@ -71,8 +71,8 @@ QPixmap generateFrequencyPixmap(const FreqMap &map, int height) {
     painter.setFont(font2);
     painter.drawText(x0, y0, str);    
 
-    int x1 = x0 + width / 2,
-      y1 = y0 + step,
+    int x1 = x + width / 2,
+      y1 = y0 + step / 2,
       h = y1 + pxCnt * map[key];
     if (h - y1 > 0) {
       painter.drawLine(x1, y1, x1, h);

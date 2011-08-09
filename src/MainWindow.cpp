@@ -26,7 +26,7 @@ MainWindow::~MainWindow() {
 void MainWindow::init() {
   // Setup objects.
   txt = new QTextEdit;
-  txt->setReadOnly(true);
+  //txt->setReadOnly(true);
   setCentralWidget(txt);
 
   // Setup menu.
@@ -66,7 +66,7 @@ void MainWindow::init() {
   connect(slide, SIGNAL(triggered()), this, SLOT(onSlidingComparison()));
   analysisActions.append(slide);    
 
-  enableAnalyses(false);
+  //enableAnalyses(false);
 
   // Setup window.
   setWindowTitle(tr("Clyzer - The Cryptanalytic Tool"));
@@ -117,7 +117,7 @@ void MainWindow::onOpenCiphertext() {
 void MainWindow::onFrequencyDistribution() {
   // Assume English alphabet at first [A-Z]!
   FreqMap dist;
-  for (char c = 'A'; c != 'Z'; c++) {
+  for (char c = 'A'; c <= 'Z'; c++) {
     dist[QString(c)] = 0;
   }
 
