@@ -23,7 +23,9 @@ private slots:
   void onFrequencyDistribution();
   void onDigraphDistribution();
   void onSlidingComparison();
-  void onAffineTransformation();  
+  void onAffineTransformation();
+  void onUpperTransformation();
+  void onLowerTransformation();
 
 private:
   void init();

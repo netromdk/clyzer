@@ -102,6 +102,20 @@ void MainWindow::init() {
   connect(affine, SIGNAL(triggered()), this, SLOT(onAffineTransformation()));
   transActions.append(affine);
 
+  transMenu->addSeparator();
+
+  QMenu *transTextMenu = transMenu->addMenu(tr("Text"));
+
+  QAction *upper = transTextMenu->addAction(tr("Uppercase"));
+  upper->setStatusTip(tr("Transform the ciphertext into uppercase."));
+  connect(upper, SIGNAL(triggered()), this, SLOT(onUpperTransformation()));
+  transActions.append(upper);
+
+  QAction *lower = transTextMenu->addAction(tr("Lowercase"));
+  lower->setStatusTip(tr("Transform the ciphertext into lowercase."));
+  connect(lower, SIGNAL(triggered()), this, SLOT(onLowerTransformation()));
+  transActions.append(lower);    
+
   enableMenus(false);  
 
   // Setup window.
@@ -203,4 +217,12 @@ void MainWindow::onAffineTransformation() {
 
     scratchPad->setText(out);
   }
+}
+
+void MainWindow::onUpperTransformation() {
+  cipherPad->setText(getCiphertext().toUpper());
+}
+
+void MainWindow::onLowerTransformation() {
+  cipherPad->setText(getCiphertext().toLower());  
 }
