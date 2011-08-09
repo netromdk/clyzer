@@ -41,12 +41,15 @@ QPixmap generateFrequencyPixmap(const FreqMap &map, int height) {
   fm2.width("A");
   int lh2 = fm2.height();
 
-  // Determine the amount of pixels pr. count of one
-  // letter-occurrence.
-  int pxCnt = (height - lineHeight - lh2 - (2 * step)) / max;
-
   QPixmap pix(width, height);
   pix.fill();
+
+  // If there's nothing to analyze then just return.
+  if (max == 0) return pix;  
+
+  // Determine the amount of pixels pr. count of one
+  // letter-occurrence.
+  int pxCnt = (height - lineHeight - lh2 - (2 * step)) / max;      
 
   QPainter painter(&pix);
   painter.setFont(font);

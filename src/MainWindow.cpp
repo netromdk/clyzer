@@ -1,18 +1,23 @@
 #include <QDir>
 #include <QFile>
+#include <QFont>
 #include <QMenu>
 #include <QDebug>
+#include <QLabel>
 #include <QRegExp>
 #include <QMenuBar>
 #include <QTextEdit>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QVBoxLayout>
 #include <QKeySequence>
 
 #include "Types.h"
+#include "Affine.h"
 #include "Utility.h"
 #include "MainWindow.h"
 #include "Distribution.h"
+#include "AffineDialog.h"
 #include "FrequencyDialog.h"
 
 MainWindow::MainWindow() {
@@ -20,16 +25,37 @@ MainWindow::MainWindow() {
 }
 
 MainWindow::~MainWindow() {
-  delete txt;
+  
 }
 
 void MainWindow::init() {
-  // Setup objects.
-  txt = new QTextEdit;
-  //txt->setReadOnly(true);
-  setCentralWidget(txt);
+  // Set English alphabet at first.
+  alphabet.setAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  
+  // Setup layout.
+  QFont txtFont("Courier");
+  
+  cipherPad = new QTextEdit;
+  cipherPad->setFont(txtFont);
+  connect(cipherPad, SIGNAL(textChanged()), this, SLOT(onCiphertextChanged()));
+  
+  scratchPad = new QTextEdit;
+  scratchPad->setFont(txtFont);
 
-  // Setup menu.
+  QVBoxLayout *layout = new QVBoxLayout;
+  layout->setContentsMargins(5, 5, 5, 5);
+  layout->addWidget(new QLabel(tr("Ciphertext")));  
+  layout->addWidget(cipherPad);
+  layout->addWidget(new QLabel(tr("Scratch Pad")));    
+  layout->addWidget(scratchPad);  
+  
+  QWidget *center = new QWidget;
+  center->setLayout(layout);
+
+  // Takes responsibility of the deletion of 'center' and descendants.
+  setCentralWidget(center);
+
+  // Setup menu: file menu.
   QMenu *fileMenu = menuBar()->addMenu(tr("File"));
   
   QAction *open = fileMenu->addAction(tr("Open Ciphertext"));
@@ -37,6 +63,7 @@ void MainWindow::init() {
   open->setShortcut(QKeySequence::Open);
   connect(open, SIGNAL(triggered()), this, SLOT(onOpenCiphertext()));
 
+  // Analyses menu.
   analysisMenu = menuBar()->addMenu(tr("Analysis"));
 
   QString btn;
@@ -66,7 +93,16 @@ void MainWindow::init() {
   connect(slide, SIGNAL(triggered()), this, SLOT(onSlidingComparison()));
   analysisActions.append(slide);    
 
-  //enableAnalyses(false);
+  // Transformations menu.
+  QMenu *transMenu = menuBar()->addMenu(tr("Transformations"));
+  
+  QAction *affine = transMenu->addAction(tr("Affine"));
+  affine->setStatusTip(tr("Do an Affine transformation of the ciphertext."));
+  affine->setShortcut(QKeySequence(btn + "+A"));
+  connect(affine, SIGNAL(triggered()), this, SLOT(onAffineTransformation()));
+  transActions.append(affine);
+
+  enableMenus(false);  
 
   // Setup window.
   setWindowTitle(tr("Clyzer - The Cryptanalytic Tool"));
@@ -74,17 +110,22 @@ void MainWindow::init() {
   centerWidget(this);  
 }
 
-void MainWindow::enableAnalyses(bool enable) {
+void MainWindow::enableMenus(bool enable) {
   foreach(QAction *action, analysisActions) {
     action->setEnabled(enable);
   }
+
+  foreach(QAction *action, transActions) {
+    action->setEnabled(enable);
+  }  
 }
 
-QString MainWindow::getCiphertext() {
-  QString ciphertext = txt->toPlainText();
+QString MainWindow::getCiphertext(bool whitespace) {
+  QString ciphertext = cipherPad->toPlainText();
 
-  // Remove white space.
-  ciphertext = ciphertext.remove(QRegExp("[\\t\\n\\r\\v\\f\\a\\s]"));  
+  if (!whitespace) {
+    ciphertext = ciphertext.remove(QRegExp("[\\t\\n\\r\\v\\f\\a\\s]"));
+  }
 
   return ciphertext;
 }
@@ -98,14 +139,10 @@ void MainWindow::onOpenCiphertext() {
     QFile file(filePath);
     if (file.open(QFile::ReadOnly)) {
       QByteArray data = file.readAll();
-      txt->setText(data);
+      cipherPad->setText(data);
 
       if (data.size() == 0) {
-        enableAnalyses(false);
         QMessageBox::critical(this, "", tr("The file is empty!"));
-      }
-      else {
-        enableAnalyses();        
       }
     }
     else {
@@ -114,14 +151,20 @@ void MainWindow::onOpenCiphertext() {
   }
 }
 
+void MainWindow::onCiphertextChanged() {
+  QString txt = cipherPad->toPlainText();
+
+  // Disable certain menu items if no ciphertext is present.
+  enableMenus(txt.size() != 0);
+}
+
 void MainWindow::onFrequencyDistribution() {
-  // Assume English alphabet at first [A-Z]!
   FreqMap dist;
-  for (char c = 'A'; c <= 'Z'; c++) {
-    dist[QString(c)] = 0;
+  foreach (QChar c, alphabet.getAlphabet()) {
+    dist[c] = 0;
   }
 
-  dist = frequencyDistribution(getCiphertext(), dist);
+  dist = frequencyDistribution(getCiphertext(false), dist);
 
   FrequencyDialog diag(dist);
   diag.exec();
@@ -133,4 +176,31 @@ void MainWindow::onDigraphDistribution() {
 
 void MainWindow::onSlidingComparison() {
 
+}
+
+void MainWindow::onAffineTransformation() {
+  AffineDialog diag;
+  if (diag.exec() == QDialog::Accepted) {
+    int a = diag.getA(), b = diag.getB();
+    bool decipher = diag.doDeciphering();
+    bool dump = diag.doDump();
+
+    SubstitutionAlphabet *subst = Affine::createSubstitution(alphabet, a, b);
+
+    QString out = "";
+    if (dump) {
+      out = subst->dump() + "\n\n";
+    }
+
+    QString ciph = getCiphertext();
+    if (decipher) {
+      out += subst->inverseTransform(ciph);
+    }
+    else {
+      out += subst->transform(ciph);
+    }
+    delete subst;    
+
+    scratchPad->setText(out);
+  }
 }

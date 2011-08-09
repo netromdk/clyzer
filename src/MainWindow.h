@@ -4,6 +4,8 @@
 #include <QList>
 #include <QMainWindow>
 
+#include "Alphabet.h"
+
 class QMenu;
 class QAction;
 class QTextEdit;
@@ -17,18 +19,21 @@ public:
 
 private slots:
   void onOpenCiphertext();
+  void onCiphertextChanged();
   void onFrequencyDistribution();
   void onDigraphDistribution();
   void onSlidingComparison();
+  void onAffineTransformation();  
 
 private:
   void init();
-  void enableAnalyses(bool enable = true);
-  QString getCiphertext();
+  void enableMenus(bool enable = true);
+  QString getCiphertext(bool whitespace = true);
 
+  Alphabet alphabet;
   QMenu *analysisMenu;
-  QList<QAction*> analysisActions;
-  QTextEdit *txt;
+  QList<QAction*> analysisActions, transActions;
+  QTextEdit *cipherPad, *scratchPad;
 };
 
 #endif // CLYZER_MAIN_WINDOW_H

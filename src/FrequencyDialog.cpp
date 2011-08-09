@@ -29,9 +29,7 @@ FrequencyDialog::FrequencyDialog(FreqMap &map, QWidget *parent)
   layout->addWidget(box);
   setLayout(layout);
 
+  setWindowTitle(tr("Frequency Distribution"));
   centerWidget(this);
 }
 
-FrequencyDialog::~FrequencyDialog() {
-  
-}

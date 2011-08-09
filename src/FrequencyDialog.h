@@ -10,7 +10,7 @@ class FrequencyDialog : public QDialog {
   
 public:
   FrequencyDialog(FreqMap &map, QWidget *parent = NULL);
-  ~FrequencyDialog();
+  ~FrequencyDialog() { }
 };
 
 #endif // CLYZER_FREQUENCY_DIALOG_H
