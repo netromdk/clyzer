@@ -11,25 +11,25 @@ INCLUDE_DIRECTORIES(
 SET( SOURCES
   Clyzer.cpp
   Utility.cpp
-  math/Mod.cpp 
   alphabet/Alphabet.cpp
   alphabet/SubstitutionAlphabet.cpp
-  analysis/Distribution.cpp
+  analysis/Frequency.cpp
   gui/MainWindow.cpp
   gui/FrequencyDialog.cpp
   gui/AffineDialog.cpp
+  math/Mod.cpp 
   )
 
 SET( HEADERS
   Utility.h
-  math/Mod.h
   alphabet/Alphabet.h
   alphabet/SubstitutionAlphabet.h
-  analysis/Distribution.h
+  analysis/Frequency.h
   ciphers/Affine.h
   gui/MainWindow.h
   gui/FrequencyDialog.h
   gui/AffineDialog.h
+  math/Mod.h
   )
 
 SET( CORELIBS

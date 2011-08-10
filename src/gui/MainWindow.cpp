@@ -15,8 +15,8 @@
 #include "Types.h"
 #include "Affine.h"
 #include "Utility.h"
+#include "Frequency.h"
 #include "MainWindow.h"
-#include "Distribution.h"
 #include "AffineDialog.h"
 #include "FrequencyDialog.h"
 

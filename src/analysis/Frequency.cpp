@@ -1,6 +1,6 @@
 #include <QDebug>
 
-#include "Distribution.h"
+#include "Frequency.h"
 
 FreqMap frequencyDistribution(const QString &data,
                               const FreqMap &init) {  
