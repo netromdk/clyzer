@@ -14,6 +14,7 @@ SET( SOURCES
   alphabet/Alphabet.cpp
   alphabet/SubstitutionAlphabet.cpp
   analysis/Frequency.cpp
+  analysis/Intervals.cpp
   gui/MainWindow.cpp
   gui/FrequencyDialog.cpp
   gui/AffineDialog.cpp
@@ -25,6 +26,7 @@ SET( HEADERS
   alphabet/Alphabet.h
   alphabet/SubstitutionAlphabet.h
   analysis/Frequency.h
+  analysis/Intervals.h
   ciphers/Affine.h
   gui/MainWindow.h
   gui/FrequencyDialog.h

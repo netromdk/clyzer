@@ -21,6 +21,7 @@ private slots:
   void onCiphertextChanged();
   void onFrequencyDistribution();
   void onDigraphDistribution();
+  void onLowFrequencyIntervals();
   void onSlidingComparison();
   void onAffineTransformation();
   void onUpperTransformation();

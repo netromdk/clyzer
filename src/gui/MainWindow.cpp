@@ -15,6 +15,7 @@
 #include "Types.h"
 #include "Affine.h"
 #include "Utility.h"
+#include "Intervals.h"
 #include "Frequency.h"
 #include "MainWindow.h"
 #include "AffineDialog.h"
@@ -85,7 +86,11 @@ void MainWindow::init() {
   connect(digraph, SIGNAL(triggered()), this, SLOT(onDigraphDistribution()));
   analysisActions.append(digraph);
 
-  analysisMenu->addSeparator();
+  QAction *lowfreq = analysisMenu->addAction(tr("Low-frequency Intervals"));
+  lowfreq->setStatusTip(tr("Computes the low-frequency intervals from the frequency distribution of the ciphertext."));
+  lowfreq->setShortcut(QKeySequence(btn + "+I"));    
+  connect(lowfreq, SIGNAL(triggered()), this, SLOT(onLowFrequencyIntervals()));
+  analysisActions.append(lowfreq);      
 
   QAction *slide = analysisMenu->addAction(tr("Sliding Comparison"));
   slide->setStatusTip(tr("Show a sliding comparison of the plain- and ciphertext distributions."));
@@ -147,7 +152,8 @@ QString MainWindow::getCiphertext(bool whitespace) {
 void MainWindow::onOpenCiphertext() {
   QString caption = tr("Choose a file containing a ciphertext");
   QString filter = tr("Text file (*.txt)");
-  QString filePath = QFileDialog::getOpenFileName(this, caption, QDir::homePath(), filter);
+  QString filePath = "/Users/netrom/projects/clyzer/test/affine_0_k7_4.txt";
+    //QFileDialog::getOpenFileName(this, caption, QDir::homePath(), filter);
 
   if (!filePath.isEmpty()) {
     QFile file(filePath);
@@ -186,6 +192,23 @@ void MainWindow::onFrequencyDistribution() {
 
 void MainWindow::onDigraphDistribution() {
 
+}
+
+void MainWindow::onLowFrequencyIntervals() {
+  FreqIntv intervals = lowFreqIntervals(getCiphertext(false),
+                                        alphabet.getAlphabet());
+
+  QString out(tr("Low-frequency intervals between letters based on frequency distribution:\n\n"));
+  
+  typedef QPair<quint32, quint32> Elm;
+  foreach (Elm interval, intervals) {
+    QString dist = QString::number(interval.first),
+      amt = QString::number(interval.second);
+    
+    out += QString("%1: %2\n").arg(dist, 3).arg(amt, 4);
+  }
+  
+  scratchPad->setText(out);
 }
 
 void MainWindow::onSlidingComparison() {
