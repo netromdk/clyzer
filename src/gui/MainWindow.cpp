@@ -7,9 +7,11 @@
 #include <QRegExp>
 #include <QMenuBar>
 #include <QTextEdit>
+#include <QCloseEvent>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QVBoxLayout>
+#include <QApplication>
 #include <QKeySequence>
 
 #include "Types.h"
@@ -23,10 +25,6 @@
 
 MainWindow::MainWindow() {
   init();
-}
-
-MainWindow::~MainWindow() {
-  
 }
 
 void MainWindow::init() {
@@ -59,10 +57,29 @@ void MainWindow::init() {
   // Setup menu: file menu.
   QMenu *fileMenu = menuBar()->addMenu(tr("File"));
   
-  QAction *open = fileMenu->addAction(tr("Open Ciphertext"));
+  QAction *open = fileMenu->addAction(tr("Open"));
   open->setStatusTip(tr("Open a ciphertext to do analysis on."));
   open->setShortcut(QKeySequence::Open);
-  connect(open, SIGNAL(triggered()), this, SLOT(onOpenCiphertext()));
+  connect(open, SIGNAL(triggered()), this, SLOT(onOpen()));
+
+  QAction *save = fileMenu->addAction(tr("Save"));
+  save->setStatusTip(tr("Save the current ciphertext."));
+  save->setShortcut(QKeySequence::Save);
+  connect(save, SIGNAL(triggered()), this, SLOT(onSave()));
+
+  QAction *saveAs = fileMenu->addAction(tr("Save As"));
+  saveAs->setStatusTip(tr("Save the current ciphertext to a new destination."));
+  connect(saveAs, SIGNAL(triggered()), this, SLOT(onSaveAs()));
+
+  QAction *restore = fileMenu->addAction(tr("Restore"));
+  restore->setStatusTip(tr("Restore the latest opened ciphertext from file."));
+  connect(restore, SIGNAL(triggered()), this, SLOT(onRestore()));
+
+  fileMenu->addSeparator();
+
+  QAction *exit = fileMenu->addAction(tr("Exit"));
+  exit->setStatusTip(tr("Exit the program."));
+  connect(exit, SIGNAL(triggered()), this, SLOT(onExit()));        
 
   // Analyses menu.
   QMenu *analysisMenu = menuBar()->addMenu(tr("Analysis"));
@@ -98,8 +115,8 @@ void MainWindow::init() {
   connect(slide, SIGNAL(triggered()), this, SLOT(onSlidingComparison()));
   analysisActions.append(slide);    
 
-  // Transformations menu.
-  QMenu *transMenu = menuBar()->addMenu(tr("Transformations"));
+  // Transformation menu.
+  QMenu *transMenu = menuBar()->addMenu(tr("Transformation"));
   
   QAction *affine = transMenu->addAction(tr("Affine"));
   affine->setStatusTip(tr("Do an Affine transformation of the ciphertext."));
@@ -149,7 +166,15 @@ QString MainWindow::getCiphertext(bool whitespace) {
   return ciphertext;
 }
 
-void MainWindow::onOpenCiphertext() {
+void MainWindow::closeEvent(QCloseEvent *event) {
+  onExit();
+
+  // Ignore event because onExit() will terminate the program if
+  // necessary.
+  event->ignore();
+}
+
+void MainWindow::onOpen() {
   QString caption = tr("Choose a file containing a ciphertext");
   QString filter = tr("Text file (*.txt)");
   QString filePath = QFileDialog::getOpenFileName(this, caption, QDir::homePath(), filter);
@@ -168,6 +193,23 @@ void MainWindow::onOpenCiphertext() {
       QMessageBox::critical(this, "", tr("Could not open file for reading: ") + filePath);
     }
   }
+}
+
+void MainWindow::onSave() {
+  
+}
+
+void MainWindow::onSaveAs() {
+  
+}
+
+void MainWindow::onRestore() {
+  
+}
+
+void MainWindow::onExit() {
+  // Perhaps ask whether the user wants to close the program first?
+  QApplication::exit(0);
 }
 
 void MainWindow::onCiphertextChanged() {

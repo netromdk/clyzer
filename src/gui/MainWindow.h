@@ -8,16 +8,24 @@
 
 class QAction;
 class QTextEdit;
+class QCloseEvent;
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
 public:
   MainWindow();
-  ~MainWindow();
+  ~MainWindow() { }
 
+protected:
+  void closeEvent(QCloseEvent *event);
+               
 private slots:
-  void onOpenCiphertext();
+  void onOpen();
+  void onSave();
+  void onSaveAs();
+  void onRestore();    
+  void onExit();
   void onCiphertextChanged();
   void onFrequencyDistribution();
   void onDigraphDistribution();
