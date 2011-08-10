@@ -1,27 +1,35 @@
 SET( NAME clyzer )
 
+INCLUDE_DIRECTORIES(
+  alphabet
+  analysis
+  ciphers
+  gui
+  math
+  )
+
 SET( SOURCES
   Clyzer.cpp
-  Mod.cpp 
   Utility.cpp
-  Alphabet.cpp
-  SubstitutionAlphabet.cpp
-  Distribution.cpp
   MainWindow.cpp
-  FrequencyDialog.cpp
-  AffineDialog.cpp
+  math/Mod.cpp 
+  alphabet/Alphabet.cpp
+  alphabet/SubstitutionAlphabet.cpp
+  analysis/Distribution.cpp
+  gui/FrequencyDialog.cpp
+  gui/AffineDialog.cpp
   )
 
 SET( HEADERS
-  Mod.h
   Utility.h
-  Alphabet.h
-  SubstitutionAlphabet.h
-  Distribution.h
-  Affine.h
   MainWindow.h
-  FrequencyDialog.h
-  AffineDialog.h
+  math/Mod.h
+  alphabet/Alphabet.h
+  alphabet/SubstitutionAlphabet.h
+  analysis/Distribution.h
+  ciphers/Affine.h
+  gui/FrequencyDialog.h
+  gui/AffineDialog.h
   )
 
 SET( CORELIBS
