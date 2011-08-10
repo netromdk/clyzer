@@ -32,7 +32,7 @@ FreqIntv lowFreqIntervals(QString data, QString alphabet) {
   qSort(all.begin(), all.end(), lessFirst);
 
   // Pick the lowest occurring elements (about 30-40%).
-  int amount = (float) alphabet.size() * 0.35;
+  int amount = (float) alphabet.size() * 0.3;
   QString chosen = "";
   for (int i = 0; i < amount; i++) {
     chosen += alphabet[all[i].first];

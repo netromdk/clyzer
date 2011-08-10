@@ -152,8 +152,7 @@ QString MainWindow::getCiphertext(bool whitespace) {
 void MainWindow::onOpenCiphertext() {
   QString caption = tr("Choose a file containing a ciphertext");
   QString filter = tr("Text file (*.txt)");
-  QString filePath = "/Users/netrom/projects/clyzer/test/affine_0_k7_4.txt";
-    //QFileDialog::getOpenFileName(this, caption, QDir::homePath(), filter);
+  QString filePath = QFileDialog::getOpenFileName(this, caption, QDir::homePath(), filter);
 
   if (!filePath.isEmpty()) {
     QFile file(filePath);
