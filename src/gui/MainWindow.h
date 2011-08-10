@@ -6,7 +6,6 @@
 
 #include "Alphabet.h"
 
-class QMenu;
 class QAction;
 class QTextEdit;
 
@@ -33,7 +32,6 @@ private:
   QString getCiphertext(bool whitespace = true);
 
   Alphabet alphabet;
-  QMenu *analysisMenu;
   QList<QAction*> analysisActions, transActions;
   QTextEdit *cipherPad, *scratchPad;
 };

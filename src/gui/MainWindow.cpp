@@ -64,7 +64,7 @@ void MainWindow::init() {
   connect(open, SIGNAL(triggered()), this, SLOT(onOpenCiphertext()));
 
   // Analyses menu.
-  analysisMenu = menuBar()->addMenu(tr("Analysis"));
+  QMenu *analysisMenu = menuBar()->addMenu(tr("Analysis"));
 
   QString btn;
 #ifdef __APPLE__
