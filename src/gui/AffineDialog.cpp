@@ -11,7 +11,7 @@
 AffineDialog::AffineDialog(QWidget *parent)
   : QDialog(parent), a(1), b(0), decipher(true), dump(false)
 {
-  QLabel *header = new QLabel(tr("Select (a, b) of the Affine equation: C = a(P + b) (mod alph. size)."));
+  QLabel *header = new QLabel(tr("Select (a, b) of the Affine equation: C = aP + b (mod alph. size)."));
   QLabel *lblA = new QLabel(tr("a:"));
   QLabel *lblB = new QLabel(tr("b:"));
 

@@ -10,13 +10,13 @@ public:
   static SubstitutionAlphabet *createSubstitution(const Alphabet &alph, int a, int b) {
     QString ciph = "", aalph = alph.getAlphabet();
 
-    // C = a(P + b)
+    // C = aP + b
     foreach (QChar c, aalph) {
       // Remember to work from 1 to .. and not from zero.
       int pos = aalph.indexOf(c) + 1;
-      
+
+      pos *= a;      
       pos += b;            
-      pos *= a;
       pos = mod(pos, aalph.size());
       if (pos == 0) {
         pos = aalph.size();
