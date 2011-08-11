@@ -40,12 +40,13 @@ private:
   void enableMenus(bool enable = true);
   QString getCiphertext(bool whitespace = true);
   void loadFile(QString filePath);
+  void saveToFile(QString filePath);
 
   Alphabet alphabet;
   QList<QAction*> analysisActions, transActions;
-  QAction *restoreAct;
+  QAction *saveAct, *saveAsAct, *restoreAct;
   QTextEdit *cipherPad, *scratchPad;
-  QString lastFile;
+  QString filePath;
 };
 
 #endif // CLYZER_MAIN_WINDOW_H

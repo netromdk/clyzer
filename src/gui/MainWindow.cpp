@@ -32,7 +32,7 @@ QString META = "Ctrl";
 QString CMD = "Meta";
 #endif
 
-MainWindow::MainWindow() : lastFile("") {
+MainWindow::MainWindow() : filePath("") {
   init();
 }
 
@@ -71,20 +71,22 @@ void MainWindow::init() {
   open->setShortcut(QKeySequence::Open);
   connect(open, SIGNAL(triggered()), this, SLOT(onOpen()));
 
-  QAction *save = fileMenu->addAction(tr("Save"));
-  save->setStatusTip(tr("Save the current ciphertext."));
-  save->setShortcut(QKeySequence::Save);
-  connect(save, SIGNAL(triggered()), this, SLOT(onSave()));
-
-  QAction *saveAs = fileMenu->addAction(tr("Save As"));
-  saveAs->setStatusTip(tr("Save the current ciphertext to a new destination."));
-  connect(saveAs, SIGNAL(triggered()), this, SLOT(onSaveAs()));
-
   restoreAct = fileMenu->addAction(tr("Restore"));
   restoreAct->setStatusTip(tr("Restore the latest opened ciphertext from file."));
   restoreAct->setShortcut(QKeySequence(CMD + "+R"));  
   restoreAct->setEnabled(false);
-  connect(restoreAct, SIGNAL(triggered()), this, SLOT(onRestore()));
+  connect(restoreAct, SIGNAL(triggered()), this, SLOT(onRestore()));  
+
+  saveAct = fileMenu->addAction(tr("Save"));
+  saveAct->setStatusTip(tr("Save the current ciphertext."));
+  saveAct->setShortcut(QKeySequence::Save);
+  saveAct->setEnabled(false);
+  connect(saveAct, SIGNAL(triggered()), this, SLOT(onSave()));
+
+  saveAsAct = fileMenu->addAction(tr("Save As"));
+  saveAsAct->setStatusTip(tr("Save the current ciphertext to a new destination."));
+  saveAsAct->setEnabled(false);  
+  connect(saveAsAct, SIGNAL(triggered()), this, SLOT(onSaveAs()));
 
   fileMenu->addSeparator();
 
@@ -170,44 +172,69 @@ QString MainWindow::getCiphertext(bool whitespace) {
   return ciphertext;
 }
 
-void MainWindow::loadFile(QString filePath) {
+void MainWindow::loadFile(QString theFile) {
   restoreAct->setText(tr("Restore"));    
   restoreAct->setEnabled(false);
+  saveAct->setEnabled(false);
+  saveAsAct->setEnabled(false);  
   
-  QFile file(filePath);
-  if (file.open(QFile::ReadOnly)) {
-    QByteArray data = file.readAll();
-    cipherPad->setText(data);
-
-    if (data.size() == 0) {
-      QMessageBox::critical(this, "", tr("The file is empty!"));
-    }
-    else {
-      // If the base name is longer than 20 characters (plus the
-      // .extension) then trim it, so that 10 characters from the left
-      // and 10 characters from the right (plus the extension length)
-      // remains.
-      QString baseName = QFileInfo(filePath).fileName();
-      int len = baseName.size(),
-        extPos = baseName.lastIndexOf(".");
-      if (extPos == -1) {
-        extPos = len;
-      }
-      
-      if (len > 20 + (len - extPos)) {
-        int rem = 10; 
-        baseName = baseName.left(rem) + "..." +
-          baseName.right(rem + (len - extPos));
-      }
-      
-      restoreAct->setEnabled(true);
-      restoreAct->setText(tr("Restore") + " (" + baseName + ")");
-      lastFile = filePath;      
-    }
-  }
-  else {
+  QFile file(theFile);
+  if (!file.open(QFile::ReadOnly)) {
     QMessageBox::critical(this, "", tr("Could not open file for reading: ") + filePath);
+    return;
   }
+    
+  QByteArray data = file.readAll();
+  cipherPad->setText(data);
+
+  if (data.size() == 0) {
+    QMessageBox::critical(this, "", tr("The file is empty!"));
+    return;
+  }
+    
+  // If the base name is longer than 20 characters (plus the
+  // .extension) then trim it, so that 10 characters from the left
+  // and 10 characters from the right (plus the extension length)
+  // remains.
+  QString baseName = QFileInfo(theFile).fileName();
+  int len = baseName.size(),
+    extPos = baseName.lastIndexOf(".");
+  if (extPos == -1) {
+    extPos = len;
+  }
+      
+  if (len > 20 + (len - extPos)) {
+    int rem = 10; 
+    baseName = baseName.left(rem) + "..." +
+      baseName.right(rem + (len - extPos));
+  }
+      
+  restoreAct->setEnabled(true);
+  restoreAct->setText(tr("Restore") + " (" + baseName + ")");
+  saveAct->setEnabled(true);
+  saveAsAct->setEnabled(true);        
+  filePath = theFile;      
+}
+
+void MainWindow::saveToFile(QString filePath) {
+  QFile file(filePath);
+  if (!file.open(QFile::WriteOnly)) {
+    QMessageBox::critical(this, "", tr("Could not open file for writing: ") + filePath);
+    return;
+  }
+  
+  QByteArray data = getCiphertext().toUtf8();
+  qint64 wrote = file.write(data);
+  if (wrote != data.size()) {
+    QMessageBox::critical(this, "",
+                          tr("Could only write ") + QString::number(wrote) +
+                          tr(" of ") + QString::number(data.size()) +
+                          tr(" to the file: ") + filePath);
+    return;
+  }
+
+  restoreAct->setEnabled(true);  
+  saveAsAct->setEnabled(true);  
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -229,16 +256,32 @@ void MainWindow::onOpen() {
 }
 
 void MainWindow::onSave() {
+  if (filePath.size() == 0) {
+    onSaveAs();
+    return;
+  }
   
+  if (!cipherPad->document()->isModified()) {
+    return;
+  }
+
+  saveToFile(filePath);
 }
 
 void MainWindow::onSaveAs() {
-  
+  QString caption = tr("Save the ciphertext to a file");
+  QString newFilePath = QFileDialog::getSaveFileName(this, caption, QDir::homePath());
+  if (newFilePath.size() == 0) {
+    return;
+  }
+
+  filePath = newFilePath;
+  saveToFile(filePath);
 }
 
 void MainWindow::onRestore() {
-  if (lastFile.size() > 0) {
-    loadFile(lastFile);
+  if (filePath.size() > 0) {
+    loadFile(filePath);
   }
 }
 
@@ -252,6 +295,16 @@ void MainWindow::onCiphertextChanged() {
 
   // Disable certain menu items if no ciphertext is present.
   enableMenus(txt.size() != 0);
+
+  if (txt.size() > 0) {
+    if (filePath.size() == 0) {
+      saveAct->setEnabled(true);
+    }
+    else {
+      restoreAct->setEnabled(true);
+    }
+  }
+
 }
 
 void MainWindow::onFrequencyDistribution() {
@@ -274,7 +327,7 @@ void MainWindow::onLowFrequencyIntervals() {
   FreqIntv intervals = lowFreqIntervals(getCiphertext(false),
                                         alphabet.getAlphabet());
 
-  QString out(tr("Low-frequency intervals between letters based on frequency distribution:\n\n"));
+  QString out(tr("Low-frequency intervals between letters based on frequency distribution:") + "\n\n");
   
   typedef QPair<quint32, quint32> Elm;
   foreach (Elm interval, intervals) {
