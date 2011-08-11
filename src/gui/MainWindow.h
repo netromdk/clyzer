@@ -41,6 +41,7 @@ private:
   QString getCiphertext(bool whitespace = true);
   void loadFile(QString filePath);
   void saveToFile(QString filePath);
+  void setRestoreName();
 
   Alphabet alphabet;
   QList<QAction*> analysisActions, transActions;

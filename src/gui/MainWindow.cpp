@@ -192,28 +192,11 @@ void MainWindow::loadFile(QString theFile) {
     return;
   }
     
-  // If the base name is longer than 20 characters (plus the
-  // .extension) then trim it, so that 10 characters from the left
-  // and 10 characters from the right (plus the extension length)
-  // remains.
-  QString baseName = QFileInfo(theFile).fileName();
-  int len = baseName.size(),
-    extPos = baseName.lastIndexOf(".");
-  if (extPos == -1) {
-    extPos = len;
-  }
-      
-  if (len > 20 + (len - extPos)) {
-    int rem = 10; 
-    baseName = baseName.left(rem) + "..." +
-      baseName.right(rem + (len - extPos));
-  }
-      
-  restoreAct->setEnabled(true);
-  restoreAct->setText(tr("Restore") + " (" + baseName + ")");
   saveAct->setEnabled(true);
   saveAsAct->setEnabled(true);        
-  filePath = theFile;      
+  filePath = theFile;
+
+  setRestoreName();
 }
 
 void MainWindow::saveToFile(QString filePath) {
@@ -234,7 +217,31 @@ void MainWindow::saveToFile(QString filePath) {
   }
 
   restoreAct->setEnabled(true);  
-  saveAsAct->setEnabled(true);  
+  saveAsAct->setEnabled(true);
+
+  setRestoreName();  
+}
+
+void MainWindow::setRestoreName() {
+  // If the base name is longer than 20 characters (plus the
+  // .extension) then trim it, so that 10 characters from the left
+  // and 10 characters from the right (plus the extension length)
+  // remains.
+  QString baseName = QFileInfo(filePath).fileName();
+  int len = baseName.size(),
+    extPos = baseName.lastIndexOf(".");
+  if (extPos == -1) {
+    extPos = len;
+  }
+      
+  if (len > 20 + (len - extPos)) {
+    int rem = 10; 
+    baseName = baseName.left(rem) + "..." +
+      baseName.right(rem + (len - extPos));
+  }
+      
+  restoreAct->setEnabled(true);
+  restoreAct->setText(tr("Restore") + " (" + baseName + ")");  
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -316,15 +323,9 @@ void MainWindow::onCiphertextChanged() {
   // Disable certain menu items if no ciphertext is present.
   enableMenus(txt.size() != 0);
 
-  if (txt.size() > 0) {
-    if (filePath.size() == 0) {
-      saveAct->setEnabled(true);
-    }
-    else {
-      restoreAct->setEnabled(true);
-    }
+  if (txt.size() > 0 && filePath.size() == 0) {
+    saveAct->setEnabled(true);
   }
-
 }
 
 void MainWindow::onFrequencyDistribution() {
