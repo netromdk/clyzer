@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QRegExp>
 #include <QMenuBar>
+#include <QToolBar>
 #include <QFileInfo>
 #include <QTextEdit>
 #include <QCloseEvent>
@@ -41,6 +42,22 @@ void MainWindow::init() {
   alphabet.setAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
   
   // Setup layout.
+  toolBar = new QToolBar(tr("laawl"));
+
+  QAction *copyDown = toolBar->addAction(tr("Copy down"));
+  connect(copyDown, SIGNAL(triggered()), this, SLOT(onCopyDown()));
+  
+  QAction *copyUp = toolBar->addAction(tr("Copy up"));
+  connect(copyUp, SIGNAL(triggered()), this, SLOT(onCopyUp()));  
+  
+  toolBar->addSeparator();
+  
+  QAction *upCase = toolBar->addAction(tr("Upcase"));
+  connect(upCase, SIGNAL(triggered()), this, SLOT(onUpCase()));    
+  
+  QAction *downCase = toolBar->addAction(tr("Downcase"));
+  connect(downCase, SIGNAL(triggered()), this, SLOT(onDownCase()));    
+  
   QFont txtFont("Courier");
   
   cipherPad = new QTextEdit;
@@ -52,6 +69,7 @@ void MainWindow::init() {
 
   QVBoxLayout *layout = new QVBoxLayout;
   layout->setContentsMargins(5, 5, 5, 5);
+  layout->addWidget(toolBar);  
   layout->addWidget(new QLabel(tr("Ciphertext")));  
   layout->addWidget(cipherPad);
   layout->addWidget(new QLabel(tr("Scratch Pad")));    
@@ -123,28 +141,16 @@ void MainWindow::init() {
 
   // Transformation menu.
   QMenu *transMenu = menuBar()->addMenu(tr("Transformation"));
+
+  QMenu *ciphersMenu = transMenu->addMenu(tr("Ciphers"));  
   
-  QAction *affine = transMenu->addAction(tr("Affine"));
+  QAction *affine = ciphersMenu->addAction(tr("Affine"));
   affine->setStatusTip(tr("Do an Affine transformation of the ciphertext."));
   affine->setShortcut(QKeySequence(META + "+A"));
   connect(affine, SIGNAL(triggered()), this, SLOT(onAffineTransformation()));
   transActions.append(affine);
 
-  transMenu->addSeparator();
-
-  QMenu *transTextMenu = transMenu->addMenu(tr("Text"));
-
-  QAction *upper = transTextMenu->addAction(tr("Uppercase"));
-  upper->setStatusTip(tr("Transform the ciphertext into uppercase."));
-  connect(upper, SIGNAL(triggered()), this, SLOT(onUpperTransformation()));
-  transActions.append(upper);
-
-  QAction *lower = transTextMenu->addAction(tr("Lowercase"));
-  lower->setStatusTip(tr("Transform the ciphertext into lowercase."));
-  connect(lower, SIGNAL(triggered()), this, SLOT(onLowerTransformation()));
-  transActions.append(lower);    
-
-  enableMenus(false);  
+  enableMenus(false);
 
   // Setup window.
   setWindowTitle(tr("Clyzer - The Cryptanalytic Tool"));
@@ -392,10 +398,18 @@ void MainWindow::onAffineTransformation() {
   }
 }
 
-void MainWindow::onUpperTransformation() {
+void MainWindow::onCopyDown() {
+  scratchPad->setText(cipherPad->toPlainText());
+}
+
+void MainWindow::onCopyUp() {
+  cipherPad->setText(scratchPad->toPlainText());  
+}
+
+void MainWindow::onUpCase() {
   cipherPad->setText(getCiphertext().toUpper());
 }
 
-void MainWindow::onLowerTransformation() {
-  cipherPad->setText(getCiphertext().toLower());  
+void MainWindow::onDownCase() {
+  cipherPad->setText(getCiphertext().toLower());    
 }

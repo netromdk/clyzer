@@ -7,6 +7,7 @@
 #include "Alphabet.h"
 
 class QAction;
+class QToolBar;
 class QTextEdit;
 class QCloseEvent;
 
@@ -32,8 +33,10 @@ private slots:
   void onLowFrequencyIntervals();
   void onSlidingComparison();
   void onAffineTransformation();
-  void onUpperTransformation();
-  void onLowerTransformation();
+  void onCopyDown();
+  void onCopyUp();  
+  void onUpCase();
+  void onDownCase();
 
 private:
   void init();
@@ -47,6 +50,7 @@ private:
   QList<QAction*> analysisActions, transActions;
   QAction *saveAct, *saveAsAct, *restoreAct;
   QTextEdit *cipherPad, *scratchPad;
+  QToolBar *toolBar;
   QString filePath;
 };
 
