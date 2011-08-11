@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QRegExp>
 #include <QMenuBar>
+#include <QFileInfo>
 #include <QTextEdit>
 #include <QCloseEvent>
 #include <QMessageBox>
@@ -23,7 +24,15 @@
 #include "AffineDialog.h"
 #include "FrequencyDialog.h"
 
-MainWindow::MainWindow() {
+#ifdef __APPLE__
+QString META = "Meta";
+QString CMD = "Ctrl";
+#else
+QString META = "Ctrl";
+QString CMD = "Meta";
+#endif
+
+MainWindow::MainWindow() : lastFile("") {
   init();
 }
 
@@ -71,9 +80,11 @@ void MainWindow::init() {
   saveAs->setStatusTip(tr("Save the current ciphertext to a new destination."));
   connect(saveAs, SIGNAL(triggered()), this, SLOT(onSaveAs()));
 
-  QAction *restore = fileMenu->addAction(tr("Restore"));
-  restore->setStatusTip(tr("Restore the latest opened ciphertext from file."));
-  connect(restore, SIGNAL(triggered()), this, SLOT(onRestore()));
+  restoreAct = fileMenu->addAction(tr("Restore"));
+  restoreAct->setStatusTip(tr("Restore the latest opened ciphertext from file."));
+  restoreAct->setShortcut(QKeySequence(CMD + "+R"));  
+  restoreAct->setEnabled(false);
+  connect(restoreAct, SIGNAL(triggered()), this, SLOT(onRestore()));
 
   fileMenu->addSeparator();
 
@@ -84,34 +95,27 @@ void MainWindow::init() {
   // Analyses menu.
   QMenu *analysisMenu = menuBar()->addMenu(tr("Analysis"));
 
-  QString btn;
-#ifdef __APPLE__
-  btn = "Meta";
-#else
-  btn = "Ctrl";
-#endif
-  
   QAction *freq = analysisMenu->addAction(tr("Frequency Distribution"));
   freq->setStatusTip(tr("Show a frequency distribution of the ciphertext."));
-  freq->setShortcut(QKeySequence(btn + "+F"));
+  freq->setShortcut(QKeySequence(META + "+F"));
   connect(freq, SIGNAL(triggered()), this, SLOT(onFrequencyDistribution()));
   analysisActions.append(freq);
 
   QAction *digraph = analysisMenu->addAction(tr("Digraph Distribution"));
   digraph->setStatusTip(tr("Show a digraph distribution of the ciphertext to see how the letters relate to each other."));
-  digraph->setShortcut(QKeySequence(btn + "+D"));  
+  digraph->setShortcut(QKeySequence(META + "+D"));  
   connect(digraph, SIGNAL(triggered()), this, SLOT(onDigraphDistribution()));
   analysisActions.append(digraph);
 
   QAction *lowfreq = analysisMenu->addAction(tr("Low-frequency Intervals"));
   lowfreq->setStatusTip(tr("Computes the low-frequency intervals from the frequency distribution of the ciphertext."));
-  lowfreq->setShortcut(QKeySequence(btn + "+I"));    
+  lowfreq->setShortcut(QKeySequence(META + "+I"));    
   connect(lowfreq, SIGNAL(triggered()), this, SLOT(onLowFrequencyIntervals()));
   analysisActions.append(lowfreq);      
 
   QAction *slide = analysisMenu->addAction(tr("Sliding Comparison"));
   slide->setStatusTip(tr("Show a sliding comparison of the plain- and ciphertext distributions."));
-  slide->setShortcut(QKeySequence(btn + "+S"));    
+  slide->setShortcut(QKeySequence(META + "+S"));    
   connect(slide, SIGNAL(triggered()), this, SLOT(onSlidingComparison()));
   analysisActions.append(slide);    
 
@@ -120,7 +124,7 @@ void MainWindow::init() {
   
   QAction *affine = transMenu->addAction(tr("Affine"));
   affine->setStatusTip(tr("Do an Affine transformation of the ciphertext."));
-  affine->setShortcut(QKeySequence(btn + "+A"));
+  affine->setShortcut(QKeySequence(META + "+A"));
   connect(affine, SIGNAL(triggered()), this, SLOT(onAffineTransformation()));
   transActions.append(affine);
 
@@ -166,6 +170,46 @@ QString MainWindow::getCiphertext(bool whitespace) {
   return ciphertext;
 }
 
+void MainWindow::loadFile(QString filePath) {
+  restoreAct->setText(tr("Restore"));    
+  restoreAct->setEnabled(false);
+  
+  QFile file(filePath);
+  if (file.open(QFile::ReadOnly)) {
+    QByteArray data = file.readAll();
+    cipherPad->setText(data);
+
+    if (data.size() == 0) {
+      QMessageBox::critical(this, "", tr("The file is empty!"));
+    }
+    else {
+      // If the base name is longer than 20 characters (plus the
+      // .extension) then trim it, so that 10 characters from the left
+      // and 10 characters from the right (plus the extension length)
+      // remains.
+      QString baseName = QFileInfo(filePath).fileName();
+      int len = baseName.size(),
+        extPos = baseName.lastIndexOf(".");
+      if (extPos == -1) {
+        extPos = len;
+      }
+      
+      if (len > 20 + (len - extPos)) {
+        int rem = 10; 
+        baseName = baseName.left(rem) + "..." +
+          baseName.right(rem + (len - extPos));
+      }
+      
+      restoreAct->setEnabled(true);
+      restoreAct->setText(tr("Restore") + " (" + baseName + ")");
+      lastFile = filePath;      
+    }
+  }
+  else {
+    QMessageBox::critical(this, "", tr("Could not open file for reading: ") + filePath);
+  }
+}
+
 void MainWindow::closeEvent(QCloseEvent *event) {
   onExit();
 
@@ -176,22 +220,11 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
 void MainWindow::onOpen() {
   QString caption = tr("Choose a file containing a ciphertext");
-  QString filter = tr("Text file (*.txt)");
+  QString filter = "";//tr("Text file (*.txt)");
   QString filePath = QFileDialog::getOpenFileName(this, caption, QDir::homePath(), filter);
 
   if (!filePath.isEmpty()) {
-    QFile file(filePath);
-    if (file.open(QFile::ReadOnly)) {
-      QByteArray data = file.readAll();
-      cipherPad->setText(data);
-
-      if (data.size() == 0) {
-        QMessageBox::critical(this, "", tr("The file is empty!"));
-      }
-    }
-    else {
-      QMessageBox::critical(this, "", tr("Could not open file for reading: ") + filePath);
-    }
+    loadFile(filePath);
   }
 }
 
@@ -204,7 +237,9 @@ void MainWindow::onSaveAs() {
 }
 
 void MainWindow::onRestore() {
-  
+  if (lastFile.size() > 0) {
+    loadFile(lastFile);
+  }
 }
 
 void MainWindow::onExit() {

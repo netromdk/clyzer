@@ -39,10 +39,13 @@ private:
   void init();
   void enableMenus(bool enable = true);
   QString getCiphertext(bool whitespace = true);
+  void loadFile(QString filePath);
 
   Alphabet alphabet;
   QList<QAction*> analysisActions, transActions;
+  QAction *restoreAct;
   QTextEdit *cipherPad, *scratchPad;
+  QString lastFile;
 };
 
 #endif // CLYZER_MAIN_WINDOW_H
