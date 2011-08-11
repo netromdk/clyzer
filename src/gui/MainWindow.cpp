@@ -286,7 +286,27 @@ void MainWindow::onRestore() {
 }
 
 void MainWindow::onExit() {
-  // Perhaps ask whether the user wants to close the program first?
+  if (cipherPad->document()->isModified()) {
+    QString question = tr("Do you want to save before quitting?");
+    QMessageBox::StandardButton btn =
+      QMessageBox::question(this, "", question,
+                            QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes);
+
+    switch (btn) {
+    default:
+    case QMessageBox::Cancel:
+      return;
+
+    case QMessageBox::No:
+      QApplication::exit(0);      
+      break;
+
+    case QMessageBox::Yes:
+      onSave();
+      break;      
+    }
+  }
+  
   QApplication::exit(0);
 }
 
