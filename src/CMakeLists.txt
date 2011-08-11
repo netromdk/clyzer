@@ -18,6 +18,7 @@ SET( SOURCES
   gui/MainWindow.cpp
   gui/FrequencyDialog.cpp
   gui/AffineDialog.cpp
+  gui/KeywordMixedSequenceDialog.cpp
   math/Mod.cpp 
   )
 
@@ -31,6 +32,7 @@ SET( HEADERS
   gui/MainWindow.h
   gui/FrequencyDialog.h
   gui/AffineDialog.h
+  gui/KeywordMixedSequenceDialog.h
   math/Mod.h
   )
 

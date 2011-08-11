@@ -1,4 +1,5 @@
 #include <QLabel>
+#include <QWidget>
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QVBoxLayout>
@@ -21,10 +22,10 @@ AffineDialog::AffineDialog(QWidget *parent)
   spinB = new QSpinBox;
   spinB->setValue(b);
   
-  chkMode = new QCheckBox(tr("Do decipherment?"));
+  chkMode = new QCheckBox(tr("Do decipherment"));
   chkMode->setCheckState(decipher ? Qt::Checked : Qt::Unchecked);
   
-  chkDump = new QCheckBox(tr("Dump substitute alphabet?"));
+  chkDump = new QCheckBox(tr("Dump substitute alphabet"));
   chkDump->setCheckState(dump ? Qt::Checked : Qt::Unchecked);  
 
   QDialogButtonBox *box =

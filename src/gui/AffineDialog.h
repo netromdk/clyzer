@@ -2,8 +2,8 @@
 #define CLYZER_AFFINE_DIALOG_H
 
 #include <QDialog>
-#include <QWidget>
 
+class QWidget;
 class QSpinBox;
 class QCheckBox;
 

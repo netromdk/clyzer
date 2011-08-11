@@ -24,6 +24,7 @@
 #include "MainWindow.h"
 #include "AffineDialog.h"
 #include "FrequencyDialog.h"
+#include "KeywordMixedSequenceDialog.h"
 
 #ifdef __APPLE__
 QString META = "Meta";
@@ -149,6 +150,12 @@ void MainWindow::init() {
   affine->setShortcut(QKeySequence(META + "+A"));
   connect(affine, SIGNAL(triggered()), this, SLOT(onAffineTransformation()));
   transActions.append(affine);
+
+  QAction *mixedSeq = transMenu->addAction(tr("Keyword-mixed sequence"));
+  mixedSeq->setStatusTip(tr("Use a keyword-mixed sequence."));
+  mixedSeq->setShortcut(QKeySequence(META + "+K"));
+  connect(mixedSeq, SIGNAL(triggered()), this, SLOT(onKeywordMixedSequence()));  
+  transActions.append(mixedSeq);  
 
   enableMenus(false);
 
@@ -398,6 +405,35 @@ void MainWindow::onAffineTransformation() {
   }
 }
 
+void MainWindow::onKeywordMixedSequence() {
+  KeywordMixedSequenceDialog diag;
+  if (diag.exec() == QDialog::Accepted) {
+    QString keyword = diag.getKeyword();
+    bool columnar = diag.useColumnarTransposition();
+    bool decipher = diag.doDeciphering();    
+    bool dump = diag.doDump();
+
+    SubstitutionAlphabet *subst =
+      keywordMixedSequence(keyword, columnar, alphabet.getAlphabet());
+
+    QString out = "";
+    if (dump) {
+      out = subst->dump() + "\n\n";
+    }
+
+    QString ciph = getCiphertext();
+    if (decipher) {
+      out += subst->inverseTransform(ciph);
+    }
+    else {
+      out += subst->transform(ciph);
+    }
+    delete subst;    
+
+    scratchPad->setText(out);
+  }
+}
+
 void MainWindow::onCopyDown() {
   scratchPad->setText(cipherPad->toPlainText());
 }
@@ -407,9 +443,9 @@ void MainWindow::onCopyUp() {
 }
 
 void MainWindow::onUpCase() {
-  cipherPad->setText(getCiphertext().toUpper());
+  cipherPad->setText(cipherPad->toPlainText().toUpper());
 }
 
 void MainWindow::onDownCase() {
-  cipherPad->setText(getCiphertext().toLower());    
+  cipherPad->setText(cipherPad->toPlainText().toLower());    
 }

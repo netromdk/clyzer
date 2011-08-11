@@ -1,11 +1,15 @@
 #include <QDebug>
 #include <QWidget>
 #include <QPainter>
+#include <QStringList>
 #include <QApplication>
 #include <QFontMetrics>
 #include <QDesktopWidget>
 
+#include <cmath>
+
 #include "Utility.h"
+#include "SubstitutionAlphabet.h"
 
 void centerWidget(QWidget *widget) {
   QDesktopWidget *desktop = QApplication::desktop();
@@ -85,4 +89,52 @@ QPixmap generateFrequencyPixmap(const FreqMap &map, int height) {
   }
 
   return pix;
+}
+
+SubstitutionAlphabet *keywordMixedSequence(const QString &keyword,
+                                           bool columnar,
+                                           const QString &alphabet) {
+  QString ciph = "";
+
+  // Write the keyword on the row whatnot duplicates.
+  int len = 0;
+  foreach (QChar c, keyword) {
+    if (!ciph.contains(c)) {
+      ciph += c;
+    }
+  }
+  len = ciph.size();
+
+  // Continue the alphabet.
+  foreach (QChar c, alphabet) {
+    if (!ciph.contains(c)) {
+      ciph += c;
+    }
+  }
+
+  // Columnar transposition.
+  QString cipherAlph = ciph;
+  if (columnar) {
+    cipherAlph = "";
+    int amount = ceil((float) alphabet.size() / len);
+    QStringList lines;
+    for (int i = 0; i < amount; i++) {
+      int left = alphabet.size() - (i * amount);
+      int ln = len;
+      if (ln > left) {
+        ln = left;
+      }
+      lines.append(ciph.mid(i * len, ln));
+    }
+
+    for (int i = 0; i < len; i++) {
+      foreach (QString line, lines) {
+        if (i >= line.size()) continue;
+
+        cipherAlph += line[i];
+      }
+    }
+  }
+  
+  return new SubstitutionAlphabet(alphabet, cipherAlph);
 }

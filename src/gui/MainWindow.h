@@ -33,6 +33,7 @@ private slots:
   void onLowFrequencyIntervals();
   void onSlidingComparison();
   void onAffineTransformation();
+  void onKeywordMixedSequence();  
   void onCopyDown();
   void onCopyUp();  
   void onUpCase();
