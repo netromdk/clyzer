@@ -3,6 +3,11 @@
 #include "Frequency.h"
 
 FreqMap polygraphicDistribution(quint32 slideSize, const QString &data,
+                                const FreqMap &init) {
+  return polygraphicDistribution(slideSize, data, QRegExp("[]"), init);
+}
+
+FreqMap polygraphicDistribution(quint32 slideSize, const QString &data,
                                 const QRegExp &whitespace,
                                 const FreqMap &init) {
   FreqMap dist(init);

@@ -22,7 +22,7 @@ FreqIntv lowFreqIntervals(QString data, QString alphabet) {
   foreach (QChar c, alphabet) {
     dist[c] = 0;
   }  
-  dist = monographicDistribution(data, dist);
+  dist = polygraphicDistribution(1, data, dist);
 
   // Sort the list so that the #occurrences appears lowest first.  
   FreqIntv all;
