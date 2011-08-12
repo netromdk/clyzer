@@ -4,7 +4,6 @@
 #include <QMenu>
 #include <QDebug>
 #include <QLabel>
-#include <QRegExp>
 #include <QMenuBar>
 #include <QToolBar>
 #include <QFileInfo>
@@ -41,6 +40,7 @@ MainWindow::MainWindow() : filePath("") {
 void MainWindow::init() {
   // Set English alphabet at first.
   alphabet.setAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  whitespace = QRegExp("[\\t\\n\\r\\v\\f\\a\\s]");
   
   // Setup layout.
   toolBar = new QToolBar(tr("laawl"));
@@ -116,17 +116,25 @@ void MainWindow::init() {
   // Analyses menu.
   QMenu *analysisMenu = menuBar()->addMenu(tr("Analysis"));
 
-  QAction *freq = analysisMenu->addAction(tr("Frequency Distribution"));
-  freq->setStatusTip(tr("Show a frequency distribution of the ciphertext."));
-  freq->setShortcut(QKeySequence(META + "+F"));
-  connect(freq, SIGNAL(triggered()), this, SLOT(onFrequencyDistribution()));
-  analysisActions.append(freq);
+  QMenu *freqMenu = analysisMenu->addMenu(tr("Frequency Distribution"));  
 
-  QAction *digraph = analysisMenu->addAction(tr("Digraph Distribution"));
-  digraph->setStatusTip(tr("Show a digraph distribution of the ciphertext to see how the letters relate to each other."));
+  QAction *mono = freqMenu->addAction(tr("Monographic"));
+  mono->setStatusTip(tr("Show a monographic monouency distribution of the ciphertext."));
+  mono->setShortcut(QKeySequence(META + "+M"));
+  connect(mono, SIGNAL(triggered()), this, SLOT(onMonographicDistribution()));
+  analysisActions.append(mono);
+
+  QAction *digraph = freqMenu->addAction(tr("Digraphic"));
+  digraph->setStatusTip(tr("Show a digraphic distribution of the ciphertext."));
   digraph->setShortcut(QKeySequence(META + "+D"));  
-  connect(digraph, SIGNAL(triggered()), this, SLOT(onDigraphDistribution()));
+  connect(digraph, SIGNAL(triggered()), this, SLOT(onDigraphicDistribution()));
   analysisActions.append(digraph);
+
+  QAction *trigraph = freqMenu->addAction(tr("Trigraphic"));
+  trigraph->setStatusTip(tr("Show a trigraphic distribution of the ciphertext."));
+  trigraph->setShortcut(QKeySequence(META + "+T"));  
+  connect(trigraph, SIGNAL(triggered()), this, SLOT(onTrigraphicDistribution()));
+  analysisActions.append(trigraph);  
 
   QAction *lowfreq = analysisMenu->addAction(tr("Low-frequency Intervals"));
   lowfreq->setStatusTip(tr("Computes the low-frequency intervals from the frequency distribution of the ciphertext."));
@@ -179,7 +187,7 @@ QString MainWindow::getCiphertext(bool whitespace) {
   QString ciphertext = cipherPad->toPlainText();
 
   if (!whitespace) {
-    ciphertext = ciphertext.remove(QRegExp("[\\t\\n\\r\\v\\f\\a\\s]"));
+    ciphertext = ciphertext.remove(whitespace);
   }
 
   return ciphertext;
@@ -255,6 +263,24 @@ void MainWindow::setRestoreName() {
       
   restoreAct->setEnabled(true);
   restoreAct->setText(tr("Restore") + " (" + baseName + ")");  
+}
+
+void MainWindow::employSubstitutionAlphabet(SubstitutionAlphabet *subst,
+                                            bool decipher, bool dump) {
+  QString out = "";
+  if (dump) {
+    out = subst->dump() + "\n\n";
+  }
+
+  QString ciph = getCiphertext();
+  if (decipher) {
+    out += subst->inverseTransform(ciph);
+  }
+  else {
+    out += subst->transform(ciph);
+  }
+
+  scratchPad->setText(out);  
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -341,20 +367,30 @@ void MainWindow::onCiphertextChanged() {
   }
 }
 
-void MainWindow::onFrequencyDistribution() {
+void MainWindow::onMonographicDistribution() {
   FreqMap dist;
   foreach (QChar c, alphabet.getAlphabet()) {
     dist[c] = 0;
   }
 
-  dist = frequencyDistribution(getCiphertext(false), dist);
+  dist = polygraphicDistribution(1, getCiphertext(), whitespace, dist);
 
   FrequencyDialog diag(dist);
   diag.exec();
 }
 
-void MainWindow::onDigraphDistribution() {
+void MainWindow::onDigraphicDistribution() {
+  FreqMap dist = polygraphicDistribution(2, getCiphertext(), whitespace);
 
+  FrequencyDialog diag(dist);
+  diag.exec();
+}
+
+void MainWindow::onTrigraphicDistribution() {
+  FreqMap dist = polygraphicDistribution(3, getCiphertext(), whitespace);
+
+  FrequencyDialog diag(dist);
+  diag.exec();
 }
 
 void MainWindow::onLowFrequencyIntervals() {
@@ -386,22 +422,8 @@ void MainWindow::onAffineTransformation() {
     bool dump = diag.doDump();
 
     SubstitutionAlphabet *subst = Affine::createSubstitution(alphabet, a, b);
-
-    QString out = "";
-    if (dump) {
-      out = subst->dump() + "\n\n";
-    }
-
-    QString ciph = getCiphertext();
-    if (decipher) {
-      out += subst->inverseTransform(ciph);
-    }
-    else {
-      out += subst->transform(ciph);
-    }
-    delete subst;    
-
-    scratchPad->setText(out);
+    employSubstitutionAlphabet(subst, decipher, dump);
+    delete subst;
   }
 }
 
@@ -415,22 +437,8 @@ void MainWindow::onKeywordMixedSequence() {
 
     SubstitutionAlphabet *subst =
       keywordMixedSequence(keyword, columnar, alphabet.getAlphabet());
-
-    QString out = "";
-    if (dump) {
-      out = subst->dump() + "\n\n";
-    }
-
-    QString ciph = getCiphertext();
-    if (decipher) {
-      out += subst->inverseTransform(ciph);
-    }
-    else {
-      out += subst->transform(ciph);
-    }
+    employSubstitutionAlphabet(subst, decipher, dump);
     delete subst;    
-
-    scratchPad->setText(out);
   }
 }
 
