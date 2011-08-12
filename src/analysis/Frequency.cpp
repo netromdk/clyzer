@@ -2,22 +2,6 @@
 
 #include "Frequency.h"
 
-FreqMap monographicDistribution(const QString &data,
-                                const FreqMap &init) {  
-  FreqMap dist(init);
-
-  foreach(QString ch, data) {
-    if (!dist.contains(ch)) {
-      dist[ch] = 1;
-    }
-    else {
-      dist[ch]++;
-    }
-  }
-
-  return dist;
-}
-
 FreqMap polygraphicDistribution(quint32 slideSize, const QString &data,
                                 const QRegExp &whitespace,
                                 const FreqMap &init) {
