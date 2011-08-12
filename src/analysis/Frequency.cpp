@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "Frequency.h"
 
 FreqMap polygraphicDistribution(quint32 slideSize, const QString &data,
@@ -11,6 +9,10 @@ FreqMap polygraphicDistribution(quint32 slideSize, const QString &data,
                                 const QRegExp &whitespace,
                                 const FreqMap &init) {
   FreqMap dist(init);
+
+  if (slideSize == 0) {
+    return dist;
+  }
 
   for (int s = 0, e = slideSize; e <= data.size(); s++, e++) {
     QString sub = data.mid(s, e - s);
