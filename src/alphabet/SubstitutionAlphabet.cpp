@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "SubstitutionAlphabet.h"
 
 SubstitutionAlphabet::SubstitutionAlphabet(const Alphabet &plain,

@@ -15,6 +15,7 @@ SET( SOURCES
   alphabet/SubstitutionAlphabet.cpp
   analysis/Frequency.cpp
   analysis/Intervals.cpp
+  ciphers/Affine.cpp
   gui/MainWindow.cpp
   gui/FrequencyDialog.cpp
   gui/AffineDialog.cpp

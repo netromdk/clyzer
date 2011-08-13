@@ -23,6 +23,7 @@
 #include "MainWindow.h"
 #include "AffineDialog.h"
 #include "FrequencyDialog.h"
+#include "SubstitutionAlphabet.h"
 #include "KeywordMixedSequenceDialog.h"
 
 #ifdef __APPLE__
@@ -46,17 +47,21 @@ void MainWindow::init() {
   toolBar = new QToolBar(tr("laawl"));
 
   QAction *copyDown = toolBar->addAction(tr("Copy down"));
+  copyDown->setStatusTip(tr("Copy the cipher pad to the scratch pad."));
   connect(copyDown, SIGNAL(triggered()), this, SLOT(onCopyDown()));
   
   QAction *copyUp = toolBar->addAction(tr("Copy up"));
+  copyUp->setStatusTip(tr("Copy the scratch pad to the cipher pad."));  
   connect(copyUp, SIGNAL(triggered()), this, SLOT(onCopyUp()));  
   
   toolBar->addSeparator();
   
   QAction *upCase = toolBar->addAction(tr("Upcase"));
+  upCase->setStatusTip(tr("Upcase the ciphertext."));  
   connect(upCase, SIGNAL(triggered()), this, SLOT(onUpCase()));    
   
   QAction *downCase = toolBar->addAction(tr("Downcase"));
+  downCase->setStatusTip(tr("Downcase the ciphertext."));    
   connect(downCase, SIGNAL(triggered()), this, SLOT(onDownCase()));    
   
   QFont txtFont("Courier");
