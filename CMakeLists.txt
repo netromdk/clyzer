@@ -8,8 +8,13 @@ SET( CMAKE_INCLUDE_CURRENT_DIR TRUE )
 SET( CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE )
 
 IF( NOT CMAKE_BUILD_TYPE )
+  Message("Setting up for Release build (min size)")
+  SET( CMAKE_BUILD_TYPE MinSizeRel ) 
+ELSEIF (${CMAKE_BUILD_TYPE} MATCHES "Debug")
+  Message("Setting up for Debug build")
   SET( CMAKE_BUILD_TYPE Debug ) 
   SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEBUG -O0 -g" )
+  ADD_DEFINITIONS( "-Wall" )
 ENDIF( )
 
 # Versioning.
@@ -22,7 +27,6 @@ FIND_PACKAGE( QT4 REQUIRED )
 INCLUDE( ${QT_USE_FILE} )
 ADD_DEFINITIONS( ${QT_DEFINITIONS} )
 
-ADD_DEFINITIONS( "-Wall" )
 ADD_SUBDIRECTORY( src )
 
 MESSAGE( STATUS "--------------------------------------------------" )
