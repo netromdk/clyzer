@@ -19,11 +19,14 @@ void Alphabet::setAlphabet(const QString &alphabet_) {
   emit changed();
 }
 
-QString Alphabet::dump() const {
+QString Alphabet::dump(bool spaces) const {
   QString res = "";
 
   foreach(QChar c, alphabet) {
-    res += QString(c) + " ";
+    res += QString(c);
+    if (spaces) {
+      res += " ";
+    }
   }
 
   return res;

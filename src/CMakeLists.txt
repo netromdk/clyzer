@@ -16,9 +16,11 @@ SET( SOURCES
   analysis/Frequency.cpp
   analysis/Intervals.cpp
   ciphers/Affine.cpp
+  ciphers/Vigenere.cpp
   gui/MainWindow.cpp
   gui/FrequencyDialog.cpp
   gui/AffineDialog.cpp
+  gui/VigenereDialog.cpp
   gui/KeywordMixedSequenceDialog.cpp
   math/Mod.cpp 
   )
@@ -30,9 +32,11 @@ SET( HEADERS
   analysis/Frequency.h
   analysis/Intervals.h
   ciphers/Affine.h
+  ciphers/Vigenere.h
   gui/MainWindow.h
   gui/FrequencyDialog.h
   gui/AffineDialog.h
+  gui/VigenereDialog.h
   gui/KeywordMixedSequenceDialog.h
   math/Mod.h
   )

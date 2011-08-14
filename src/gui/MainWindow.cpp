@@ -17,11 +17,13 @@
 
 #include "Types.h"
 #include "Affine.h"
+#include "Vigenere.h"
 #include "Utility.h"
 #include "Intervals.h"
 #include "Frequency.h"
 #include "MainWindow.h"
 #include "AffineDialog.h"
+#include "VigenereDialog.h"
 #include "FrequencyDialog.h"
 #include "SubstitutionAlphabet.h"
 #include "KeywordMixedSequenceDialog.h"
@@ -149,9 +151,10 @@ void MainWindow::init() {
 
   QAction *slide = analysisMenu->addAction(tr("Sliding Comparison"));
   slide->setStatusTip(tr("Show a sliding comparison of the plain- and ciphertext distributions."));
-  slide->setShortcut(QKeySequence(META + "+S"));    
-  connect(slide, SIGNAL(triggered()), this, SLOT(onSlidingComparison()));
-  analysisActions.append(slide);    
+  slide->setShortcut(QKeySequence(META + "+S"));
+  slide->setEnabled(false);
+  //connect(slide, SIGNAL(triggered()), this, SLOT(onSlidingComparison()));
+  //analysisActions.append(slide);    
 
   // Transformation menu.
   QMenu *transMenu = menuBar()->addMenu(tr("Transformation"));
@@ -163,6 +166,12 @@ void MainWindow::init() {
   affine->setShortcut(QKeySequence(META + "+A"));
   connect(affine, SIGNAL(triggered()), this, SLOT(onAffineTransformation()));
   transActions.append(affine);
+
+  QAction *vigenere = ciphersMenu->addAction(tr("Vigenere"));
+  vigenere->setStatusTip(tr("Do an Vigenere transformation of the ciphertext."));
+  vigenere->setShortcut(QKeySequence(META + "+V"));
+  connect(vigenere, SIGNAL(triggered()), this, SLOT(onVigenereTransformation()));
+  transActions.append(vigenere);  
 
   QAction *mixedSeq = transMenu->addAction(tr("Keyword-mixed sequence"));
   mixedSeq->setStatusTip(tr("Use a keyword-mixed sequence."));
@@ -426,10 +435,25 @@ void MainWindow::onAffineTransformation() {
     bool decipher = diag.doDeciphering();
     bool dump = diag.doDump();
 
-    SubstitutionAlphabet *subst = Affine::createSubstitution(alphabet, a, b);
+    SubstitutionAlphabet *subst =
+      Affine::createSubstitution(alphabet, a, b);
     employSubstitutionAlphabet(subst, decipher, dump);
     delete subst;
   }
+}
+
+void MainWindow::onVigenereTransformation() {
+  VigenereDialog diag;
+  if (diag.exec() == QDialog::Accepted) {
+    QString key = diag.getKeyword();
+    bool decipher = diag.doDeciphering();
+    bool dump = diag.doDump();
+
+    SubstitutionAlphabet *subst =
+      Vigenere::createSubstitution(alphabet, key);
+    employSubstitutionAlphabet(subst, decipher, dump);
+    delete subst;
+  }  
 }
 
 void MainWindow::onKeywordMixedSequence() {

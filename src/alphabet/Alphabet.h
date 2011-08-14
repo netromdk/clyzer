@@ -15,7 +15,7 @@ public:
 
   void setAlphabet(const QString &alphabet);
   QString getAlphabet() const { return alphabet; }
-  QString dump() const;
+  QString dump(bool spaces = true) const;
 
 signals:
   void changed();
