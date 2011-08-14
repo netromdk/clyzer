@@ -16,17 +16,16 @@ public:
 
   QString getKeyword() const { return keyword; }
   bool doDeciphering() const { return mode; }  
-  bool doDump() const { return dump; }
 
 private slots:
   void onFinished();
   
 private:
   QLineEdit *txtKeyword;
-  QCheckBox *chkMode, *chkDump;
+  QCheckBox *chkMode;
   
   QString keyword;
-  bool mode, dump;
+  bool mode;
 };
 
 #endif // CLYZER_VIGENERE_DIALOG_H

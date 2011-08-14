@@ -10,7 +10,7 @@
 #include "VigenereDialog.h"
 
 VigenereDialog::VigenereDialog(QWidget *parent)
-  : QDialog(parent), keyword(""), mode(true), dump(false)
+  : QDialog(parent), keyword(""), mode(true)
 {
   QLabel *header = new QLabel(tr("Input the keyword for the Vigenere cipher."));
   QLabel *lblKeyword = new QLabel(tr("Keyword:"));
@@ -19,9 +19,6 @@ VigenereDialog::VigenereDialog(QWidget *parent)
 
   chkMode = new QCheckBox(tr("Do decipherment"));
   chkMode->setCheckState(mode ? Qt::Checked : Qt::Unchecked);  
-
-  chkDump = new QCheckBox(tr("Dump sequence"));
-  chkDump->setCheckState(dump ? Qt::Checked : Qt::Unchecked);  
 
   QDialogButtonBox *box =
     new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -36,7 +33,6 @@ VigenereDialog::VigenereDialog(QWidget *parent)
   layout->addWidget(header);  
   layout->addLayout(layoutKeyword);
   layout->addWidget(chkMode);  
-  layout->addWidget(chkDump);
   layout->addWidget(box);
 
   setLayout(layout);
@@ -48,7 +44,6 @@ VigenereDialog::VigenereDialog(QWidget *parent)
 void VigenereDialog::onFinished() {
   keyword = txtKeyword->text();
   mode = (chkMode->checkState() == Qt::Checked);  
-  dump = (chkDump->checkState() == Qt::Checked);
 
   accept();
 }

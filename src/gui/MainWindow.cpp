@@ -447,11 +447,10 @@ void MainWindow::onVigenereTransformation() {
   if (diag.exec() == QDialog::Accepted) {
     QString key = diag.getKeyword();
     bool decipher = diag.doDeciphering();
-    bool dump = diag.doDump();
 
     SubstitutionAlphabet *subst =
       Vigenere::createSubstitution(alphabet, key);
-    employSubstitutionAlphabet(subst, decipher, dump);
+    employSubstitutionAlphabet(subst, decipher, false);
     delete subst;
   }  
 }
