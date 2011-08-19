@@ -53,6 +53,7 @@ private:
   void setRestoreName();
   void employSubstitutionAlphabet(SubstitutionAlphabet *subst,
                                   bool decipher, bool dump);
+  QTextEdit *getActivePad();
 
   Alphabet alphabet;
   QRegExp whitespaceRE;

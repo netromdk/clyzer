@@ -290,6 +290,15 @@ void MainWindow::setRestoreName() {
   restoreAct->setText(tr("Restore") + " (" + baseName + ")");  
 }
 
+QTextEdit *MainWindow::getActivePad() {
+  if (scratchPad->hasFocus()) {
+    return scratchPad;
+  }
+
+  // Default to cipher pad.
+  return cipherPad;
+}
+
 void MainWindow::employSubstitutionAlphabet(SubstitutionAlphabet *subst,
                                             bool decipher, bool dump) {
   QString out = "";
@@ -501,9 +510,15 @@ void MainWindow::onCopyUp() {
 }
 
 void MainWindow::onUpCase() {
-  cipherPad->setText(cipherPad->toPlainText().toUpper());
+  QTextEdit *pad = getActivePad();
+  QTextCursor cursor = pad->textCursor();
+  cursor.insertText(cursor.selectedText().toUpper());
+  pad->setTextCursor(cursor);
 }
 
 void MainWindow::onDownCase() {
-  cipherPad->setText(cipherPad->toPlainText().toLower());    
+  QTextEdit *pad = getActivePad();
+  QTextCursor cursor = pad->textCursor();
+  cursor.insertText(cursor.selectedText().toLower());
+  pad->setTextCursor(cursor);
 }
