@@ -205,7 +205,11 @@ void MainWindow::enableMenus(bool enable) {
 }
 
 QString MainWindow::getCiphertext(bool whitespace) {
-  QString ciphertext = cipherPad->toPlainText();
+  // Grab the selected text if any or the whole text.
+  QString ciphertext = cipherPad->textCursor().selectedText();
+  if (ciphertext.isEmpty()) {
+    ciphertext = cipherPad->toPlainText();
+  }
 
   if (!whitespace) {
     ciphertext = ciphertext.remove(whitespaceRE);
