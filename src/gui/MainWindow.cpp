@@ -25,6 +25,7 @@
 #include "AffineDialog.h"
 #include "VigenereDialog.h"
 #include "FrequencyDialog.h"
+#include "IndexOfCoincidence.h"
 #include "SubstitutionAlphabet.h"
 #include "KeywordMixedSequenceDialog.h"
 
@@ -43,10 +44,10 @@ MainWindow::MainWindow() : filePath("") {
 void MainWindow::init() {
   // Set English alphabet at first.
   alphabet.setAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-  whitespace = QRegExp("[\\t\\n\\r\\v\\f\\a\\s]");
-  
+  whitespaceRE = QRegExp("[\\t\\n\\r\\v\\f\\a\\s]");
+
   // Setup layout.
-  toolBar = new QToolBar(tr("laawl"));
+  toolBar = new QToolBar;
 
   QAction *copyDown = toolBar->addAction(tr("Copy down"));
   copyDown->setStatusTip(tr("Copy the cipher pad to the scratch pad."));
@@ -145,9 +146,15 @@ void MainWindow::init() {
 
   QAction *lowfreq = analysisMenu->addAction(tr("Low-frequency Intervals"));
   lowfreq->setStatusTip(tr("Computes the low-frequency intervals from the frequency distribution of the ciphertext."));
-  lowfreq->setShortcut(QKeySequence(META + "+I"));    
+  lowfreq->setShortcut(QKeySequence(META + "+L"));    
   connect(lowfreq, SIGNAL(triggered()), this, SLOT(onLowFrequencyIntervals()));
-  analysisActions.append(lowfreq);      
+  analysisActions.append(lowfreq);
+
+  QAction *indexoc = analysisMenu->addAction(tr("Index of Coincidence"));
+  indexoc->setStatusTip(tr("Computes the Index of Coincidence from the frequency distribution of the ciphertext."));
+  indexoc->setShortcut(QKeySequence(META + "+I"));    
+  connect(indexoc, SIGNAL(triggered()), this, SLOT(onIndexOfCoincidence()));
+  analysisActions.append(indexoc);        
 
   QAction *slide = analysisMenu->addAction(tr("Sliding Comparison"));
   slide->setStatusTip(tr("Show a sliding comparison of the plain- and ciphertext distributions."));
@@ -201,7 +208,7 @@ QString MainWindow::getCiphertext(bool whitespace) {
   QString ciphertext = cipherPad->toPlainText();
 
   if (!whitespace) {
-    ciphertext = ciphertext.remove(whitespace);
+    ciphertext = ciphertext.remove(whitespaceRE);
   }
 
   return ciphertext;
@@ -387,21 +394,21 @@ void MainWindow::onMonographicDistribution() {
     dist[c] = 0;
   }
 
-  dist = polygraphicDistribution(1, getCiphertext(), whitespace, dist);
+  dist = polygraphicDistribution(1, getCiphertext(), whitespaceRE, dist);
 
   FrequencyDialog diag(dist);
   diag.exec();
 }
 
 void MainWindow::onDigraphicDistribution() {
-  FreqMap dist = polygraphicDistribution(2, getCiphertext(), whitespace);
+  FreqMap dist = polygraphicDistribution(2, getCiphertext(), whitespaceRE);
 
   FrequencyDialog diag(dist);
   diag.exec();
 }
 
 void MainWindow::onTrigraphicDistribution() {
-  FreqMap dist = polygraphicDistribution(3, getCiphertext(), whitespace);
+  FreqMap dist = polygraphicDistribution(3, getCiphertext(), whitespaceRE);
 
   FrequencyDialog diag(dist);
   diag.exec();
@@ -421,6 +428,14 @@ void MainWindow::onLowFrequencyIntervals() {
     out += QString("%1: %2\n").arg(dist, 3).arg(amt, 4);
   }
   
+  scratchPad->setText(out);
+}
+
+void MainWindow::onIndexOfCoincidence() {
+  QString ciph = getCiphertext(false);
+  FreqMap dist = polygraphicDistribution(1, ciph);
+  float ic_ = ic(dist, ciph.size());
+  QString out = tr("The Index of Coincidence is") + " " + QString::number(ic_);
   scratchPad->setText(out);
 }
 

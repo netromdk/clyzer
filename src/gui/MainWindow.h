@@ -34,6 +34,7 @@ private slots:
   void onDigraphicDistribution();
   void onTrigraphicDistribution();  
   void onLowFrequencyIntervals();
+  void onIndexOfCoincidence();
   void onSlidingComparison();
   void onAffineTransformation();
   void onVigenereTransformation();
@@ -54,7 +55,7 @@ private:
                                   bool decipher, bool dump);
 
   Alphabet alphabet;
-  QRegExp whitespace;
+  QRegExp whitespaceRE;
   QList<QAction*> analysisActions, transActions;
   QAction *saveAct, *saveAsAct, *restoreAct;
   QTextEdit *cipherPad, *scratchPad;

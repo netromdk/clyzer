@@ -15,6 +15,7 @@ SET( SOURCES
   alphabet/SubstitutionAlphabet.cpp
   analysis/Frequency.cpp
   analysis/Intervals.cpp
+  analysis/IndexOfCoincidence.cpp
   ciphers/Affine.cpp
   ciphers/Vigenere.cpp
   gui/MainWindow.cpp
@@ -31,6 +32,7 @@ SET( HEADERS
   alphabet/SubstitutionAlphabet.h
   analysis/Frequency.h
   analysis/Intervals.h
+  analysis/IndexOfCoincidence.h
   ciphers/Affine.h
   ciphers/Vigenere.h
   gui/MainWindow.h
