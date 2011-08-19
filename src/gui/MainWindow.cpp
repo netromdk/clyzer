@@ -212,10 +212,12 @@ void MainWindow::enableMenus(bool enable) {
 }
 
 QString MainWindow::getCiphertext(bool whitespace) {
+  QTextEdit *pad = getActivePad();
+  
   // Grab the selected text if any or the whole text.
-  QString ciphertext = cipherPad->textCursor().selectedText();
+  QString ciphertext = pad->textCursor().selectedText();
   if (ciphertext.isEmpty()) {
-    ciphertext = cipherPad->toPlainText();
+    ciphertext = pad->toPlainText();
   }
 
   if (!whitespace) {
