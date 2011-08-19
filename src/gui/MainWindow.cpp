@@ -38,6 +38,8 @@ QString META = "Ctrl";
 QString CMD = "Meta";
 #endif
 
+QString TITLE = QObject::tr("Clyzer - The Cryptanalytic Tool");
+
 MainWindow::MainWindow() : filePath("") {
   init();
 }
@@ -196,7 +198,7 @@ void MainWindow::init() {
   enableMenus(false);
 
   // Setup window.
-  setWindowTitle(tr("Clyzer - The Cryptanalytic Tool"));
+  setWindowTitle(TITLE);
   resize(800, 600);
   centerWidget(this);  
 }
@@ -296,7 +298,9 @@ void MainWindow::setRestoreName() {
   }
       
   restoreAct->setEnabled(true);
-  restoreAct->setText(tr("Restore") + " (" + baseName + ")");  
+  restoreAct->setText(tr("Restore") + " (" + baseName + ")");
+
+  setWindowTitle(TITLE + " [" + baseName +"]");
 }
 
 QTextEdit *MainWindow::getActivePad() {
