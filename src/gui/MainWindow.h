@@ -38,7 +38,8 @@ private slots:
   void onSlidingComparison();
   void onAffineTransformation();
   void onVigenereTransformation();
-  void onKeywordMixedSequence();  
+  void onKeywordMixedSequence();
+  void onAlignInBlocks();
   void onCopyDown();
   void onCopyUp();  
   void onUpCase();

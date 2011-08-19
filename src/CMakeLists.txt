@@ -23,6 +23,7 @@ SET( SOURCES
   gui/AffineDialog.cpp
   gui/VigenereDialog.cpp
   gui/KeywordMixedSequenceDialog.cpp
+  gui/AlignInBlocksDialog.cpp
   math/Mod.cpp 
   )
 
@@ -40,6 +41,7 @@ SET( HEADERS
   gui/AffineDialog.h
   gui/VigenereDialog.h
   gui/KeywordMixedSequenceDialog.h
+  gui/AlignInBlocksDialog.h
   math/Mod.h
   )
 

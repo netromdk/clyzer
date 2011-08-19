@@ -26,6 +26,7 @@
 #include "VigenereDialog.h"
 #include "FrequencyDialog.h"
 #include "IndexOfCoincidence.h"
+#include "AlignInBlocksDialog.h"
 #include "SubstitutionAlphabet.h"
 #include "KeywordMixedSequenceDialog.h"
 
@@ -184,7 +185,13 @@ void MainWindow::init() {
   mixedSeq->setStatusTip(tr("Use a keyword-mixed sequence."));
   mixedSeq->setShortcut(QKeySequence(META + "+K"));
   connect(mixedSeq, SIGNAL(triggered()), this, SLOT(onKeywordMixedSequence()));  
-  transActions.append(mixedSeq);  
+  transActions.append(mixedSeq);
+
+  QAction *blocks = transMenu->addAction(tr("Align in equal-sized blocks"));
+  blocks->setStatusTip(tr("Align the ciphertext in equal-sized blocks."));
+  blocks->setShortcut(QKeySequence(META + "+B"));
+  connect(blocks, SIGNAL(triggered()), this, SLOT(onAlignInBlocks()));  
+  transActions.append(blocks);    
 
   enableMenus(false);
 
@@ -498,6 +505,23 @@ void MainWindow::onKeywordMixedSequence() {
       keywordMixedSequence(keyword, columnar, alphabet.getAlphabet());
     employSubstitutionAlphabet(subst, decipher, dump);
     delete subst;    
+  }
+}
+
+void MainWindow::onAlignInBlocks() {
+  AlignInBlocksDialog diag;
+  if (diag.exec() == QDialog::Accepted) {
+    quint32 blockLen = diag.getBlockLength();
+
+    QString ciph = getCiphertext(false), out = "";
+    int s = 0;
+    for (int e = blockLen; e < ciph.size();
+         s += blockLen, e += blockLen) {
+      out += ciph.mid(s, e - s) + " ";
+    }
+    out += ciph.mid(s);
+
+    scratchPad->setText(out);
   }
 }
 
