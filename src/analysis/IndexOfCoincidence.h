@@ -3,6 +3,7 @@
 
 #include "Types.h"
 
-float ic(const FreqMap &dist, quint32 len);
+// Use alphLen to normalize the result if necessary.
+float ic(const FreqMap &dist, quint32 len, quint32 alphLen = 1);
 
 #endif // CLYZER_INDEX_OF_COINCIDENSE_H

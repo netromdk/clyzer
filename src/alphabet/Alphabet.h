@@ -14,6 +14,7 @@ public:
   ~Alphabet() { }
 
   void setAlphabet(const QString &alphabet);
+  quint32 size() const { return alphabet.size(); }
   QString getAlphabet() const { return alphabet; }
   QString dump(bool spaces = true) const;
 

@@ -434,8 +434,11 @@ void MainWindow::onLowFrequencyIntervals() {
 void MainWindow::onIndexOfCoincidence() {
   QString ciph = getCiphertext(false);
   FreqMap dist = polygraphicDistribution(1, ciph);
-  float ic_ = ic(dist, ciph.size());
-  QString out = tr("The Index of Coincidence is") + " " + QString::number(ic_);
+  float ic1 = ic(dist, ciph.size()),
+    icn = ic(dist, ciph.size(), alphabet.size());
+  QString out = tr("The Index of Coincidence is") + " " +
+    QString::number(ic1) + " (" + QString::number(icn) + " " +
+    tr("normalized") + ")";
   scratchPad->setText(out);
 }
 
