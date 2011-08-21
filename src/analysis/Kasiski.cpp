@@ -1,7 +1,6 @@
 #include <QDebug> // remove
 #include <QSet>
 #include <QMap>
-#include <QList>
 #include <QtAlgorithms>
 
 #include "Kasiski.h"
@@ -17,11 +16,11 @@ namespace {
   }      
 }
 
-quint32 kasiskiMethod(const QString &data) {
+void kasiskiMethod(const QString &data, QList<quint32> &candidates,
+                   int maxAmount) {
   // Use a better solution later like Suffice trees!
   
-  // 1. Find repeated groups of letters.  For instance, if the
-  // ciphertext was FGXTHJAQWNFGXQ, the distance between FGX's is 10.
+  // Find repeated groups of letters.
   KMap map;
   int n = data.size(), maxL, maxR, maxLen;
   maxL = maxR = maxLen = 0;
@@ -51,15 +50,13 @@ quint32 kasiskiMethod(const QString &data) {
     }    
   }
 
-  // 2. Factor each of the found numbers, starting with the ones that
-  // were repeated most times, and if any number is repeated in the
-  // majority of these factorings, it is likely to be the length of
-  // the keyword.
+  // Factor all of the intervals.
   KList keys = map.keys();
-  if (keys.size() > 0) {
-    qSort(keys.begin(), keys.end(), moreFirst);
-    
-    KMap2 &map2 = map[keys[0]];
+  qSort(keys.begin(), keys.end(), moreFirst);
+
+  KList facs;    
+  foreach (quint32 key, keys) {
+    KMap2 &map2 = map[key];
     KList intervals;
     foreach (const QString &key, map2.keys()) {
       KList &starts = map2[key];
@@ -72,24 +69,41 @@ quint32 kasiskiMethod(const QString &data) {
       }
     }
 
-    // Find the most common factor of the intervals.
-    QList<qint32> facs;    
-    foreach (qint32 i, intervals) {
+    foreach (quint32 i, intervals) {
       pollardRhoFactor(i, facs);
     }
-    
-    QSet<qint32> ufacs = facs.toSet();
-    qint32 res = 0, amount = 0;
+  }
+
+  if (maxAmount <= 0) {
+    maxAmount = 1;
+  }
+     
+  QSet<quint32> ufacs = facs.toSet();
+  if (ufacs.size() < maxAmount) {
+    maxAmount = ufacs.size();
+  }
+
+  // Find the most common factors of the intervals.
+  for (;;) {
+    quint32 res = 0, amount = 0;
     foreach (qint32 i, ufacs) {
-      qint32 cnt = facs.count(i);
+      if (candidates.contains(i)) {
+        continue;
+      }
+      
+      quint32 cnt = facs.count(i);
       if (cnt > amount) {
         amount = cnt;
         res = i;
       }
     }
-    
-    return res;
+
+    if (!candidates.contains(res)) {
+      candidates.append(res);
+    }
+
+    if (candidates.size() == maxAmount) {
+      break;
+    }
   }
-  
-  return 0;
 }

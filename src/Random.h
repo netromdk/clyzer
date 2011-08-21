@@ -19,7 +19,7 @@ public:
   quint32 getInt32();
   quint64 getInt64();
 
-  quint64 getRange(quint64 start, quint64 end);
+  quint32 getRange(quint32 start, quint32 end);
 
 private:
 #ifdef WIN32

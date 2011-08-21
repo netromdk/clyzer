@@ -1,3 +1,4 @@
+#include <QDebug> //remove
 #include <QtAlgorithms>
 
 #include "Mod.h"
@@ -7,12 +8,14 @@
 #include "PollardRho.h"
 
 namespace {
-  qint32 func(qint32 x, qint32 a, qint32 n) {
+  quint32 func(quint32 x, quint32 a, quint32 n) {
     return mod(x * x + a, n);
   }  
 }
 
-void pollardRhoFactor(qint32 n, QList<qint32> &facs) {
+void pollardRhoFactor(quint32 n, QList<quint32> &facs) {
+  if (n < 2) return;
+  
   if (isPropPrime(n)) {
     facs.push_back(n);
     qSort(facs.begin(), facs.end());
@@ -21,7 +24,7 @@ void pollardRhoFactor(qint32 n, QList<qint32> &facs) {
 
   int g = pollardRho(n);
   if (!isPropPrime(g)) {
-    QList<qint32> ext;
+    QList<quint32> ext;
     pollardRhoFactor(g, ext);
     facs.append(ext);
   }
@@ -32,18 +35,18 @@ void pollardRhoFactor(qint32 n, QList<qint32> &facs) {
   pollardRhoFactor(n / g, facs);  
 }
 
-qint32 pollardRho(qint32 n) {
+quint32 pollardRho(quint32 n) {
   if (n < 2) return n;
   
   if (n == 4) return 2;
-      
+
   if (isPropPrime(n)) return n;
 
   Random rnd;
-  qint32 a = rnd.getRange(1, n - 3),
-    s = rnd.getRange(0, n - 1);    
+  quint32 a = rnd.getRange(1, n - 3),
+    s = rnd.getRange(0, n - 1);
 
-  qint32 g, u, v;    
+  quint32 g, u, v;    
   u = v = s;
     
   do {

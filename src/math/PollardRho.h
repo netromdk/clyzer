@@ -3,7 +3,7 @@
 
 #include <QList>
 
-void pollardRhoFactor(qint32 n, QList<qint32> &facs);            
-qint32 pollardRho(qint32 n);
+void pollardRhoFactor(quint32 n, QList<quint32> &facs);            
+quint32 pollardRho(quint32 n);
 
 #endif // CLYZER_POLLARD_RHO_H

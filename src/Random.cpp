@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include <cmath>
 
 #include "Random.h"

@@ -475,8 +475,18 @@ void MainWindow::onIndexOfCoincidence() {
 }
 
 void MainWindow::onKasiskiMethod() {
-  quint32 keywordLen = kasiskiMethod(getCiphertext(false));
-  qDebug() << "keyword length:" << keywordLen;
+  QList<quint32> candidates;
+  kasiskiMethod(getCiphertext(false), candidates);
+  QString out = tr("Kasiski's Method:") + "\n" +
+    tr("Candidates for the keyword length:") + " ";
+  foreach (quint32 candidate, candidates) {
+    out += QString::number(candidate) + ", ";
+  }
+  if (out.endsWith(", ")) {
+    out = out.left(out.size() - 2);
+  }
+  out += "\n" + tr("(Most likely first.)");
+  scratchPad->setText(out);
 }
 
 void MainWindow::onSlidingComparison() {
