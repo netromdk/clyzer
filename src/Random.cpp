@@ -1,4 +1,4 @@
-#include <QDebug>
+#include <cmath>
 
 #include "Random.h"
 
@@ -72,16 +72,16 @@ quint64 Random::getInt64() {
   return rand_int.n;
 }
 
-quint64 Random::getRange(quint64 start, quint64 end) {
+quint32 Random::getRange(quint32 start, quint32 end) {
   // Ignore if invalid input.
   if (start > end) {
     return 0;
   }
 
-  quint64 res = getInt32();
+  quint32 res = getInt32();
   while (res < start || res > end) {
     if (res < start) {
-      res += (end - start) / 4;
+      res += ceil((float) (end - start) / 4.0);
     }
       
     if (res > end) {
