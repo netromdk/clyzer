@@ -1,4 +1,3 @@
-#include <QDebug> // remove
 #include <QSet>
 #include <QMap>
 #include <QtAlgorithms>
@@ -18,7 +17,7 @@ namespace {
 
 void kasiskiMethod(const QString &data, QList<quint32> &candidates,
                    int maxAmount) {
-  // Use a better solution later like Suffice trees!
+  // Use a better solution later like Suffix trees!
   
   // Find repeated groups of letters.
   KMap map;
