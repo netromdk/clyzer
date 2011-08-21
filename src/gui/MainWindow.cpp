@@ -17,6 +17,7 @@
 
 #include "Types.h"
 #include "Affine.h"
+#include "Kasiski.h"
 #include "Vigenere.h"
 #include "Utility.h"
 #include "Intervals.h"
@@ -157,7 +158,13 @@ void MainWindow::init() {
   indexoc->setStatusTip(tr("Computes the Index of Coincidence from the frequency distribution of the ciphertext."));
   indexoc->setShortcut(QKeySequence(META + "+I"));    
   connect(indexoc, SIGNAL(triggered()), this, SLOT(onIndexOfCoincidence()));
-  analysisActions.append(indexoc);        
+  analysisActions.append(indexoc);
+
+  QAction *kasiski = analysisMenu->addAction(tr("Kasiski's Method"));
+  kasiski->setStatusTip(tr("Use Kasiski's Method to try to find the length of the keyword used in a polyalphabetic substitution cipher."));
+  kasiski->setShortcut(QKeySequence(META + "+K"));    
+  connect(kasiski, SIGNAL(triggered()), this, SLOT(onKasiskiMethod()));
+  analysisActions.append(kasiski);          
 
   QAction *slide = analysisMenu->addAction(tr("Sliding Comparison"));
   slide->setStatusTip(tr("Show a sliding comparison of the plain- and ciphertext distributions."));
@@ -185,7 +192,6 @@ void MainWindow::init() {
 
   QAction *mixedSeq = transMenu->addAction(tr("Keyword-mixed sequence"));
   mixedSeq->setStatusTip(tr("Use a keyword-mixed sequence."));
-  mixedSeq->setShortcut(QKeySequence(META + "+K"));
   connect(mixedSeq, SIGNAL(triggered()), this, SLOT(onKeywordMixedSequence()));  
   transActions.append(mixedSeq);
 
@@ -466,6 +472,11 @@ void MainWindow::onIndexOfCoincidence() {
     QString::number(ic1) + " (" + QString::number(icn) + " " +
     tr("normalized") + ")";
   scratchPad->setText(out);
+}
+
+void MainWindow::onKasiskiMethod() {
+  quint32 keywordLen = kasiskiMethod(getCiphertext(false));
+  qDebug() << "keyword length:" << keywordLen;
 }
 
 void MainWindow::onSlidingComparison() {

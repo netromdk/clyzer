@@ -33,7 +33,7 @@ void pollardRhoFactor(qint32 n, QList<qint32> &facs) {
 }
 
 qint32 pollardRho(qint32 n) {
-  if (n < 2) return 0;
+  if (n < 2) return n;
   
   if (n == 4) return 2;
       

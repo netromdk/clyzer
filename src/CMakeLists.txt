@@ -11,11 +11,13 @@ INCLUDE_DIRECTORIES(
 SET( SOURCES
   Clyzer.cpp
   Utility.cpp
+  Random.cpp
   alphabet/Alphabet.cpp
   alphabet/SubstitutionAlphabet.cpp
   analysis/Frequency.cpp
   analysis/Intervals.cpp
   analysis/IndexOfCoincidence.cpp
+  analysis/Kasiski.cpp
   ciphers/Affine.cpp
   ciphers/Vigenere.cpp
   gui/MainWindow.cpp
@@ -25,15 +27,20 @@ SET( SOURCES
   gui/KeywordMixedSequenceDialog.cpp
   gui/AlignInBlocksDialog.cpp
   math/Mod.cpp 
+  math/GCD.cpp
+  math/PollardRho.cpp 
+  math/Primality.cpp
   )
 
 SET( HEADERS
   Utility.h
+  Random.h
   alphabet/Alphabet.h
   alphabet/SubstitutionAlphabet.h
   analysis/Frequency.h
   analysis/Intervals.h
   analysis/IndexOfCoincidence.h
+  analysis/Kasiski.h
   ciphers/Affine.h
   ciphers/Vigenere.h
   gui/MainWindow.h
@@ -43,10 +50,14 @@ SET( HEADERS
   gui/KeywordMixedSequenceDialog.h
   gui/AlignInBlocksDialog.h
   math/Mod.h
+  math/GCD.h
+  math/PollardRho.h
+  math/Primality.h
   )
 
 SET( CORELIBS
   ${QT_LIBRARIES}
+  ${GMP_LIBRARIES}
   )
 
 QT4_WRAP_CPP( HEADERS_MOC ${HEADERS} )

@@ -35,6 +35,7 @@ private slots:
   void onTrigraphicDistribution();  
   void onLowFrequencyIntervals();
   void onIndexOfCoincidence();
+  void onKasiskiMethod();
   void onSlidingComparison();
   void onAffineTransformation();
   void onVigenereTransformation();
