@@ -4,7 +4,6 @@
 #include <QList>
 #include <QString>
 
-void kasiskiMethod(const QString &data, QList<quint32> &candidates,
-                   int maxAmount = 3);
+void kasiskiMethod(const QString &data, QList<quint32> &candidates);
 
 #endif // CLYZER_KASISKI_METHOD_H

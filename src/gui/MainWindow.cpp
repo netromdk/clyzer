@@ -479,13 +479,20 @@ void MainWindow::onKasiskiMethod() {
   kasiskiMethod(getCiphertext(false), candidates);
   QString out = tr("Kasiski's Method:") + "\n" +
     tr("Candidates for the keyword length:") + " ";
-  foreach (quint32 candidate, candidates) {
-    out += QString::number(candidate) + ", ";
+
+  if (candidates.size() > 0) {
+    foreach (quint32 candidate, candidates) {
+      out += QString::number(candidate) + ", ";
+    }
+    if (out.endsWith(", ")) {
+      out = out.left(out.size() - 2);
+    }
+    out += "\n" + tr("(Most likely first but might be incorrect.)");
   }
-  if (out.endsWith(", ")) {
-    out = out.left(out.size() - 2);
+  else {
+    out += "\n" + tr("Could not determine it.");
   }
-  out += "\n" + tr("(Most likely first.)");
+  
   scratchPad->setText(out);
 }
 

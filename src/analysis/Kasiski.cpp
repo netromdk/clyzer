@@ -1,3 +1,5 @@
+#include <QDebug> //remove
+
 #include <QSet>
 #include <QMap>
 #include <QtAlgorithms>
@@ -6,6 +8,7 @@
 #include "PollardRho.h"
 
 namespace {
+  typedef QSet<quint32> KSet;  
   typedef QList<quint32> KList;
   typedef QMap<QString, KList> KMap2;
   typedef QMap<quint32, KMap2> KMap; // k -> string -> start pos
@@ -15,8 +18,7 @@ namespace {
   }      
 }
 
-void kasiskiMethod(const QString &data, QList<quint32> &candidates,
-                   int maxAmount) {
+void kasiskiMethod(const QString &data, QList<quint32> &candidates) {
   // Use a better solution later like Suffix trees!
   
   // Find repeated groups of letters.
@@ -53,7 +55,6 @@ void kasiskiMethod(const QString &data, QList<quint32> &candidates,
   KList keys = map.keys();
   qSort(keys.begin(), keys.end(), moreFirst);
 
-  KList facs;    
   foreach (quint32 key, keys) {
     KMap2 &map2 = map[key];
     KList intervals;
@@ -68,41 +69,21 @@ void kasiskiMethod(const QString &data, QList<quint32> &candidates,
       }
     }
 
+    QList<KList> facList;    
     foreach (quint32 i, intervals) {
+      KList facs;            
       pollardRhoFactor(i, facs);
+      facList.append(facs);
     }
+  
+    // Find the common factors.
+    KSet set = facList[0].toSet();
+    for (int i = 1; i < facList.size(); i++) {
+      KSet facs = facList[i].toSet();
+      set = set.intersect(facs);
+    }
+    candidates.append(set.toList());
   }
 
-  if (maxAmount <= 0) {
-    maxAmount = 1;
-  }
-     
-  QSet<quint32> ufacs = facs.toSet();
-  if (ufacs.size() < maxAmount) {
-    maxAmount = ufacs.size();
-  }
-
-  // Find the most common factors of the intervals.
-  for (;;) {
-    quint32 res = 0, amount = 0;
-    foreach (qint32 i, ufacs) {
-      if (candidates.contains(i)) {
-        continue;
-      }
-      
-      quint32 cnt = facs.count(i);
-      if (cnt > amount) {
-        amount = cnt;
-        res = i;
-      }
-    }
-
-    if (!candidates.contains(res)) {
-      candidates.append(res);
-    }
-
-    if (candidates.size() == maxAmount) {
-      break;
-    }
-  }
+  candidates = candidates.toSet().toList();
 }
