@@ -26,9 +26,9 @@ SET( SOURCES
   gui/VigenereDialog.cpp
   gui/KeywordMixedSequenceDialog.cpp
   gui/AlignInBlocksDialog.cpp
-  math/Mod.cpp 
+  math/Mod.cpp
   math/GCD.cpp
-  math/PollardRho.cpp 
+  math/PollardRho.cpp
   math/Primality.cpp
   )
 
@@ -55,12 +55,12 @@ SET( HEADERS
   math/Primality.h
   )
 
+ADD_EXECUTABLE( ${NAME} ${SOURCES} ${HEADERS_MOC} )
+
+QT5_USE_MODULES(${NAME} Core Gui Widgets)
+
 SET( CORELIBS
-  ${QT_LIBRARIES}
   ${GMP_LIBRARIES}
   )
 
-QT4_WRAP_CPP( HEADERS_MOC ${HEADERS} )
-
-ADD_EXECUTABLE( ${NAME} ${SOURCES} ${HEADERS_MOC} )
 TARGET_LINK_LIBRARIES( ${NAME} ${CORELIBS} )
